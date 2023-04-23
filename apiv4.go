@@ -80,7 +80,7 @@ func (c *Client) Login(username, password string) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	} else if resp.Status != "200 OK" { // check for correct status code
-		return nil, errwrp.Wrap(qbt.ErrBadResponse, "couldnt log in")
+		return nil, errwrp.Wrap(ErrBadResponse, "couldnt log in")
 	}
 
 	// add the cookie to cookie jar to authenticate later requests
