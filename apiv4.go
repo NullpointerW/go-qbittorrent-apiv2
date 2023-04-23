@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"path/filepath"
 
-	wrap "github.com/pkg/errors"
+	errwrp "github.com/pkg/errors"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -80,7 +80,7 @@ func (c *Client) Login(username, password string) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	} else if resp.Status != "200 OK" { // check for correct status code
-		return nil, wrap.Wrap(qbt.ErrBadResponse, "couldnt log in")
+		return nil, errwrp.Wrap(qbt.ErrBadResponse, "couldnt log in")
 	}
 
 	// add the cookie to cookie jar to authenticate later requests
@@ -101,7 +101,7 @@ func (c *Client) Login(username, password string) (*http.Response, error) {
 func (c *Client) AddNewTorrent(magnetLink, path string) (*http.Response, error) {
 	ap, err := filepath.Abs(path)
 	if err != nil {
-		return nil, wrap.Wrapf(err, "cannot conv abs_path %s", path)
+		return nil, errwrp.Wrapf(err, "cannot conv abs_path %s", path)
 	}
 	opt := optional{
 		"urls":     magnetLink,
