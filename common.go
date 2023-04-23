@@ -1,101 +1,123 @@
 package qbt_apiv4
 
 import (
-	"bytes"
-	"io"
-	"mime/multipart"
+	errwrp "github.com/pkg/errors"
 	"net/http"
-	"os"
-	"path"
-
-	wrap "github.com/pkg/errors"
 )
 
-// writeOptions will write a map to the buffer through multipart.NewWriter
-func writeOptions(writer *multipart.Writer, opts optional) {
-	ws := opts.StringField()
-	for key, val := range ws {
-		writer.WriteField(key, val)
-	}
+// BasicTorrent holds a basic torrent object from qbittorrent
+type BasicTorrent struct {
+	AddedOn       int    `json:"added_on"`
+	Category      string `json:"category"`
+	CompletionOn  int64  `json:"completion_on"`
+	Dlspeed       int    `json:"dlspeed"`
+	Eta           int    `json:"eta"`
+	ForceStart    bool   `json:"force_start"`
+	Hash          string `json:"hash"`
+	Name          string `json:"name"`
+	NumComplete   int    `json:"num_complete"`
+	NumIncomplete int    `json:"num_incomplete"`
+	NumLeechs     int    `json:"num_leechs"`
+	NumSeeds      int    `json:"num_seeds"`
+	Priority      int    `json:"priority"`
+	Progress      int    `json:"progress"`
+	Ratio         int    `json:"ratio"`
+	SavePath      string `json:"save_path"`
+	SeqDl         bool   `json:"seq_dl"`
+	Size          int    `json:"size"`
+	State         string `json:"state"`
+	SuperSeeding  bool   `json:"super_seeding"`
+	Upspeed       int    `json:"upspeed"`
 }
 
-// postMultipart will perform a multiple part POST request
-func (client *Client) postMultipart(endpoint string, buffer bytes.Buffer, contentType string) (*http.Response, error) {
-	req, err := http.NewRequest("POST", client.URL+endpoint, &buffer)
-	if err != nil {
-		return nil, wrap.Wrap(err, "error creating request")
-	}
-
-	// add the content-type so qbittorrent knows what to expect
-	req.Header.Set("Content-Type", contentType)
-
-	resp, err := client.http.Do(req)
-	if err != nil {
-		return nil, wrap.Wrap(err, "failed to perform request")
-	}
-
-	return resp, nil
+// Torrent holds a torrent object from qbittorrent
+// with more information than BasicTorrent
+type Torrent struct {
+	AdditionDate           int     `json:"addition_date"`
+	Comment                string  `json:"comment"`
+	CompletionDate         int     `json:"completion_date"`
+	CreatedBy              string  `json:"created_by"`
+	CreationDate           int     `json:"creation_date"`
+	DlLimit                int     `json:"dl_limit"`
+	DlSpeed                int     `json:"dl_speed"`
+	DlSpeedAvg             int     `json:"dl_speed_avg"`
+	Eta                    int     `json:"eta"`
+	LastSeen               int     `json:"last_seen"`
+	NbConnections          int     `json:"nb_connections"`
+	NbConnectionsLimit     int     `json:"nb_connections_limit"`
+	Peers                  int     `json:"peers"`
+	PeersTotal             int     `json:"peers_total"`
+	PieceSize              int     `json:"piece_size"`
+	PiecesHave             int     `json:"pieces_have"`
+	PiecesNum              int     `json:"pieces_num"`
+	Reannounce             int     `json:"reannounce"`
+	SavePath               string  `json:"save_path"`
+	SeedingTime            int     `json:"seeding_time"`
+	Seeds                  int     `json:"seeds"`
+	SeedsTotal             int     `json:"seeds_total"`
+	ShareRatio             float64 `json:"share_ratio"`
+	TimeElapsed            int     `json:"time_elapsed"`
+	TotalDownloaded        int     `json:"total_downloaded"`
+	TotalDownloadedSession int     `json:"total_downloaded_session"`
+	TotalSize              int     `json:"total_size"`
+	TotalUploaded          int     `json:"total_uploaded"`
+	TotalUploadedSession   int     `json:"total_uploaded_session"`
+	TotalWasted            int     `json:"total_wasted"`
+	UpLimit                int     `json:"up_limit"`
+	UpSpeed                int     `json:"up_speed"`
+	UpSpeedAvg             int     `json:"up_speed_avg"`
 }
 
-// postMultipartData will perform a multiple part POST request without a file
-func (client *Client) postMultipartData(endpoint string, opts optional) (*http.Response, error) {
-	var buffer bytes.Buffer
-	writer := multipart.NewWriter(&buffer)
-
-	// write the options to the buffer
-	// will contain the link string
-	writeOptions(writer, opts)
-
-	// close the writer before doing request to get closing line on multipart request
-	if err := writer.Close(); err != nil {
-		return nil, wrap.Wrap(err, "failed to close writer")
-	}
-
-	resp, err := client.postMultipart(endpoint, buffer, writer.FormDataContentType())
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
+// Tracker holds a tracker object from qbittorrent
+type Tracker struct {
+	Msg      string `json:"msg"`
+	NumPeers int    `json:"num_peers"`
+	Status   string `json:"status"`
+	URL      string `json:"url"`
 }
 
-// postMultipartFile will perform a multiple part POST request with a file
-func (client *Client) postMultipartFile(endpoint string, fileName string, opts optional) (*http.Response, error) {
-	var buffer bytes.Buffer
-	writer := multipart.NewWriter(&buffer)
+// WebSeed holds a webseed object from qbittorrent
+type WebSeed struct {
+	URL string `json:"url"`
+}
 
-	// open the file for reading
-	file, err := os.Open(fileName)
+// TorrentFile holds a torrent file object from qbittorrent
+type TorrentFile struct {
+	IsSeed   bool   `json:"is_seed"`
+	Name     string `json:"name"`
+	Priority int    `json:"priority"`
+	Progress int    `json:"progress"`
+	Size     int    `json:"size"`
+}
+
+// Sync holds the sync response struct which contains
+// the server state and a map of infohashes to Torrents
+type Sync struct {
+	Categories  []string `json:"categories"`
+	FullUpdate  bool     `json:"full_update"`
+	Rid         int      `json:"rid"`
+	ServerState struct {
+		ConnectionStatus  string `json:"connection_status"`
+		DhtNodes          int    `json:"dht_nodes"`
+		DlInfoData        int    `json:"dl_info_data"`
+		DlInfoSpeed       int    `json:"dl_info_speed"`
+		DlRateLimit       int    `json:"dl_rate_limit"`
+		Queueing          bool   `json:"queueing"`
+		RefreshInterval   int    `json:"refresh_interval"`
+		UpInfoData        int    `json:"up_info_data"`
+		UpInfoSpeed       int    `json:"up_info_speed"`
+		UpRateLimit       int    `json:"up_rate_limit"`
+		UseAltSpeedLimits bool   `json:"use_alt_speed_limits"`
+	} `json:"server_state"`
+	Torrents map[string]Torrent `json:"torrents"`
+}
+
+func RespOk(resp *http.Response, err error) error {
 	if err != nil {
-		return nil, wrap.Wrap(err, "error opening file")
+		return err
+	} else if resp.Status != "200 OK" { // check for correct status code
+		return errwrp.Wrap(ErrBadResponse, "couldnt log in")
+	} else {
+		return nil
 	}
-	// defer the closing of the file until the end of function
-	// so we can still copy its contents
-	defer file.Close()
-
-	// create form for writing the file to and give it the filename
-	formWriter, err := writer.CreateFormFile("torrents", path.Base(fileName))
-	if err != nil {
-		return nil, wrap.Wrap(err, "error adding file")
-	}
-
-	// write the options to the buffer
-	writeOptions(writer, opts)
-
-	// copy the file contents into the form
-	if _, err = io.Copy(formWriter, file); err != nil {
-		return nil, wrap.Wrap(err, "error copying file")
-	}
-
-	// close the writer before doing request to get closing line on multipart request
-	if err := writer.Close(); err != nil {
-		return nil, wrap.Wrap(err, "failed to close writer")
-	}
-
-	resp, err := client.postMultipart(endpoint, buffer, writer.FormDataContentType())
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, nil
 }
