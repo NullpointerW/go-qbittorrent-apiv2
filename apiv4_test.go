@@ -40,3 +40,19 @@ func TestAddTorrnet(t *testing.T) {
 	b, _ := io.ReadAll(resp.Body)
 	fmt.Println(string(b))
 }
+
+func TestTorrnetList(t *testing.T){
+	
+	cli, err := NewCli("http://localhost:8080")
+	if err != nil {
+		panic(err)
+	}
+
+	torrnet,err:=cli.TorrentList(optional{
+		"filter":"downloading",
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(torrnet)
+}

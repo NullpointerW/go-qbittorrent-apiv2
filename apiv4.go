@@ -117,7 +117,7 @@ func (c *Client) AddNewTorrent(magnetLink, path string) (*http.Response, error) 
 	return resp, nil
 }
 
-func (c *Client) TorrentList(opt optional) (BasicTorrent, error) {
+func (c *Client) TorrentList(opt optional) ([]BasicTorrent, error) {
 	values := url.Values{}
 	for k, v := range opt.StringField() {
 		values.Set(k, v)
@@ -125,7 +125,7 @@ func (c *Client) TorrentList(opt optional) (BasicTorrent, error) {
 
 	req, err := http.NewRequest("POST", c.URL+"torrents/info", bytes.NewBufferString(values.Encode()))
 	if err != nil {
-		return BasicTorrent{}, err
+		return nil, err
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -135,17 +135,18 @@ func (c *Client) TorrentList(opt optional) (BasicTorrent, error) {
 	err = RespOk(resp, err)
 
 	if err != nil {
-		return BasicTorrent{}, err
+		return nil, err
 	}
 	defer resp.Body.Close()
-	b, err := io.ReadAll(req.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return BasicTorrent{}, err
+		return nil, err
 	}
-	bt := new(BasicTorrent)
+	bt := new([]BasicTorrent)
+	fmt.Println(string(b))
 	err = json.Unmarshal(b, bt)
 	if err != nil {
-		return BasicTorrent{}, err
+		return nil, err
 	}
 	return *bt, nil
 }
