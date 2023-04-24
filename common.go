@@ -1,9 +1,21 @@
 package qbt_apiv4
 
 import (
-	errwrp "github.com/pkg/errors"
+	"fmt"
 	"net/http"
+
+	errwrp "github.com/pkg/errors"
 )
+
+type optional map[string]any
+
+func (opt optional) StringField() map[string]string {
+	m := make(map[string]string)
+	for k, v := range opt {
+		m[k] = fmt.Sprintf("%v", v)
+	}
+	return m
+}
 
 // BasicTorrent holds a basic torrent object from qbittorrent
 type BasicTorrent struct {
