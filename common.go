@@ -19,27 +19,27 @@ func (opt optional) StringField() map[string]string {
 
 // BasicTorrent holds a basic torrent object from qbittorrent
 type BasicTorrent struct {
-	AddedOn       int    `json:"added_on"`
-	Category      string `json:"category"`
-	CompletionOn  int64  `json:"completion_on"`
-	Dlspeed       int    `json:"dlspeed"`
-	Eta           int    `json:"eta"`
-	ForceStart    bool   `json:"force_start"`
-	Hash          string `json:"hash"`
-	Name          string `json:"name"`
-	NumComplete   int    `json:"num_complete"`
-	NumIncomplete int    `json:"num_incomplete"`
-	NumLeechs     int    `json:"num_leechs"`
-	NumSeeds      int    `json:"num_seeds"`
-	Priority      int    `json:"priority"`
-	Progress      int    `json:"progress"`
-	Ratio         int    `json:"ratio"`
-	SavePath      string `json:"save_path"`
-	SeqDl         bool   `json:"seq_dl"`
-	Size          int    `json:"size"`
-	State         string `json:"state"`
-	SuperSeeding  bool   `json:"super_seeding"`
-	Upspeed       int    `json:"upspeed"`
+	AddedOn       int     `json:"added_on"`
+	Category      string  `json:"category"`
+	CompletionOn  int64   `json:"completion_on"`
+	Dlspeed       int     `json:"dlspeed"`
+	Eta           int     `json:"eta"`
+	ForceStart    bool    `json:"force_start"`
+	Hash          string  `json:"hash"`
+	Name          string  `json:"name"`
+	NumComplete   int     `json:"num_complete"`
+	NumIncomplete int     `json:"num_incomplete"`
+	NumLeechs     int     `json:"num_leechs"`
+	NumSeeds      int     `json:"num_seeds"`
+	Priority      int     `json:"priority"`
+	Progress      float64 `json:"progress"`
+	Ratio         int     `json:"ratio"`
+	SavePath      string  `json:"save_path"`
+	SeqDl         bool    `json:"seq_dl"`
+	Size          int     `json:"size"`
+	State         string  `json:"state"`
+	SuperSeeding  bool    `json:"super_seeding"`
+	Upspeed       int     `json:"upspeed"`
 }
 
 // Torrent holds a torrent object from qbittorrent
@@ -95,19 +95,24 @@ type WebSeed struct {
 
 // TorrentFile holds a torrent file object from qbittorrent
 type TorrentFile struct {
-	IsSeed   bool   `json:"is_seed"`
-	Name     string `json:"name"`
-	Priority int    `json:"priority"`
-	Progress int    `json:"progress"`
-	Size     int    `json:"size"`
+	IsSeed       bool    `json:"is_seed"`
+	Name         string  `json:"name"`
+	Priority     int     `json:"priority"`
+	Progress     float64 `json:"progress"`
+	Size         int     `json:"size"`
+	PieceRange   []int   `json:"piece_range"`
+	Availability float64 `json:"availability"`
 }
 
 // Sync holds the sync response struct which contains
 // the server state and a map of infohashes to Torrents
 type Sync struct {
-	Categories  []string `json:"categories"`
-	FullUpdate  bool     `json:"full_update"`
-	Rid         int      `json:"rid"`
+	Categories map[string]struct {
+		Name     string `json:"name"`
+		SavePath string `json:"savePath"`
+	} `json:"categories"`
+	FullUpdate  bool `json:"full_update"`
+	Rid         int  `json:"rid"`
 	ServerState struct {
 		ConnectionStatus  string `json:"connection_status"`
 		DhtNodes          int    `json:"dht_nodes"`
@@ -128,7 +133,7 @@ func RespOk(resp *http.Response, err error) error {
 	if err != nil {
 		return err
 	} else if resp.Status != "200 OK" { // check for correct status code
-		return errwrp.Wrap(ErrBadResponse, "couldnt log in")
+		return errwrp.Wrapf(ErrBadResponse, "status code:%s",resp.Status)
 	} else {
 		return nil
 	}

@@ -27,13 +27,12 @@ func TestOpttoStringField(t *testing.T) {
 }
 
 func TestAddTorrnet(t *testing.T) {
-	mglink := `magnet:?xt=urn:btih:F224C0C47C1692008BE4391CE812B239813AD7F1&dn=%E3%80%90%E4%BB%96%E5%92%8C%E5%A5%B9%E7%9A%84%E5%AD%A4%E7%8B%AC%E6%83%85%E4%BA%8B%E3%80%91%E3%80%90%E9%AB%98%E6%B8%85720P%E7%89%88BD-RMVB.%E4%B8%AD%E5%AD%97%E3%80%91%E3%80%902014%E7%BE%8E%E5%9B%BD%E5%89%A7%E6%83%85%E5%A4%A7%E7%89%87%E3%80%91
-	  `
+	link := `magnet:?xt=urn:btih:7827e38d4b7eac848829fadd8a3c6c28561d0f2c&tr=http%3a%2f%2ft.nyaatracker.com%2fannounce&tr=http%3a%2f%2ftracker.kamigami.org%3a2710%2fannounce&tr=http%3a%2f%2fshare.camoe.cn%3a8080%2fannounce&tr=http%3a%2f%2fopentracker.acgnx.se%2fannounce&tr=http%3a%2f%2fanidex.moe%3a6969%2fannounce&tr=http%3a%2f%2ft.acg.rip%3a6699%2fannounce&tr=https%3a%2f%2ftr.bangumi.moe%3a9696%2fannounce&tr=udp%3a%2f%2ftr.bangumi.moe%3a6969%2fannounce&tr=http%3a%2f%2fopen.acgtracker.com%3a1096%2fannounce&tr=udp%3a%2f%2ftracker.opentrackr.org%3a1337%2fannounce`
 	cli, err := NewCli("http://localhost:8991", "admin", "123456")
 	if err != nil {
 		panic(err)
 	}
-	resp, err := cli.AddNewTorrent(mglink, "./download")
+	resp, err := cli.AddNewTorrent(link, "./")
 	if err != nil {
 		panic(err)
 	}
@@ -75,4 +74,29 @@ func TestGetTorrentProperties(t *testing.T) {
 	}
 	// fmt.Printf("%#+v",torrnetProp)
 	fmt.Println(torrnetProp.SavePath)
+}
+
+func TestGetMainData(t *testing.T){
+	cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	sync,err:=cli.GetMainData(1)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v",sync)
+}
+
+func TestGetTorrnetContent(t *testing.T) {
+cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	tf,err:=cli.GetTorrentContents("7827e38d4b7eac848829fadd8a3c6c28561d0f2c-",1,3)
+	if err != nil {
+		fmt.Printf("%+v",err)
+		t.FailNow()
+	}
+	fmt.Printf("%+v",tf)
 }

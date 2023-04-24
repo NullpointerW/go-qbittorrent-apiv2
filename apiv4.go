@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -13,6 +12,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 
 	errwrp "github.com/pkg/errors"
 	"golang.org/x/net/publicsuffix"
@@ -41,20 +41,23 @@ func NewCli(url string, auth ...string) (*Client, error) {
 	}
 
 	nrequired := len(auth) == 0
-	if !nrequired {
-		var (
-			resp *http.Response
-			err  error
-		)
+
+	var (
+		resp *http.Response
+		err  error
+	)
+	if nrequired {
+		resp, err = client.Login("", "")
+	} else {
 		resp, err = client.Login(auth[0], auth[1])
-		if err != nil {
-			return nil, err
-		}
-		defer resp.Body.Close()
-		b, _ := io.ReadAll(resp.Body)
-		if string(b) != "Ok." {
-			return nil, errors.New("login failed")
-		}
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	b, _ := io.ReadAll(resp.Body)
+	if string(b) != "Ok." {
+		return nil, errors.New("login failed")
 	}
 
 	return client, nil
@@ -78,20 +81,19 @@ func (c *Client) Login(username, password string) (*http.Response, error) {
 			return nil, err
 		}
 		u.Path = ""
-		fmt.Println(u.String())
 		c.httpCli.Jar.SetCookies(u, cookies)
 	}
 	return resp, nil
 }
 
 // Torrent management
-func (c *Client) AddNewTorrent(magnetLink, path string) (*http.Response, error) {
+func (c *Client) AddNewTorrent(urlLink, path string) (*http.Response, error) {
 	ap, err := filepath.Abs(path)
 	if err != nil {
 		return nil, errwrp.Wrapf(err, "cannot conv abs_path %s", path)
 	}
 	opt := optional{
-		"urls":     magnetLink,
+		"urls":     urlLink,
 		"savepath": ap,
 	}
 	resp, err := c.postMultipartData("torrents/add", opt)
@@ -141,6 +143,60 @@ func (c *Client) GetTorrentProperties(hash string) (Torrent, error) {
 		return Torrent{}, err
 	}
 	return *t, nil
+}
+
+func (c *Client) GetTorrentContents(hash string, indexes ...int) ([]TorrentFile, error) {
+	opt := optional{
+		"hash": hash,
+	}
+	if len(indexes) > 0 {
+		var idxes string
+		for _, idx := range indexes {
+			idxes += strconv.Itoa(idx) + "|"
+		}
+		idxes = string([]byte(idxes)[:len(idxes)-1])
+		opt["indexes"] = idxes
+	}
+
+	resp, err := c.postXwwwFormUrlencoded("torrents/files", opt)
+	err = RespOk(resp, err)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	tf := new([]TorrentFile)
+	err = json.Unmarshal(b, tf)
+	if err != nil {
+		return nil, err
+	}
+	return *tf, nil
+}
+
+// Sync
+// Sync API implements requests for obtaining changes since the last request. All Sync API methods are under "sync"
+func (c *Client) GetMainData(rid int) (Sync, error) {
+	resp, err := c.postXwwwFormUrlencoded("sync/maindata", optional{
+		"rid": rid,
+	})
+	err = RespOk(resp, err)
+	if err != nil {
+		return Sync{}, err
+	}
+	defer resp.Body.Close()
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return Sync{}, err
+	}
+	s := new(Sync)
+	err = json.Unmarshal(b, s)
+	if err != nil {
+		return Sync{}, err
+	}
+	return *s, nil
 }
 
 func (c *Client) postXwwwFormUrlencoded(endpoint string, opts optional) (*http.Response, error) {
