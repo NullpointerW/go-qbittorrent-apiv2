@@ -154,7 +154,7 @@ func (c *Client) GetTorrentContents(hash string, indexes ...int) ([]TorrentFile,
 		for _, idx := range indexes {
 			idxes += strconv.Itoa(idx) + "|"
 		}
-		idxes = string([]byte(idxes)[:len(idxes)-1])
+		idxes=idxes[:len(idxes)-1]
 		opt["indexes"] = idxes
 	}
 
@@ -199,6 +199,7 @@ func (c *Client) GetMainData(rid int) (Sync, error) {
 	return *s, nil
 }
 
+// Use POST request to send x-www-form-urlencoded encoding.
 func (c *Client) postXwwwFormUrlencoded(endpoint string, opts optional) (*http.Response, error) {
 	values := url.Values{}
 	for k, v := range opts.StringField() {

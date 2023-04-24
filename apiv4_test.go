@@ -93,7 +93,7 @@ cli, err := NewCli("http://localhost:8991")
 	if err != nil {
 		panic(err)
 	}
-	tf,err:=cli.GetTorrentContents("7827e38d4b7eac848829fadd8a3c6c28561d0f2c-",1,3)
+	tf,err:=cli.GetTorrentContents("7827e38d4b7eac848829fadd8a3c6c28561d0f2c",0,1,2)
 	if err != nil {
 		fmt.Printf("%+v",err)
 		t.FailNow()
