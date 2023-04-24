@@ -41,7 +41,6 @@ func TestAddTorrnet(t *testing.T) {
 }
 
 func TestTorrnetList(t *testing.T) {
-
 	cli, err := NewCli("http://localhost:8991", "admin", "123456")
 	if err != nil {
 		panic(err)
@@ -76,27 +75,27 @@ func TestGetTorrentProperties(t *testing.T) {
 	fmt.Println(torrnetProp.SavePath)
 }
 
-func TestGetMainData(t *testing.T){
+func TestGetMainData(t *testing.T) {
 	cli, err := NewCli("http://localhost:8991")
 	if err != nil {
 		panic(err)
 	}
-	sync,err:=cli.GetMainData(1)
+	sync, err := cli.GetMainData(1)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("%+v",sync)
+	fmt.Printf("%+v", sync)
 }
 
 func TestGetTorrnetContent(t *testing.T) {
-cli, err := NewCli("http://localhost:8991")
+	cli, err := NewCli("http://localhost:8991")
 	if err != nil {
 		panic(err)
 	}
-	tf,err:=cli.GetTorrentContents("7827e38d4b7eac848829fadd8a3c6c28561d0f2c",0,1,2)
+	tf, err := cli.GetTorrentContents("7827e38d4b7eac848829fadd8a3c6c28561d0f2c", 0, 1, 2)
 	if err != nil {
-		fmt.Printf("%+v",err)
+		fmt.Printf("%+v", err)
 		t.FailNow()
 	}
-	fmt.Printf("%+v",tf)
+	fmt.Printf("%+v", tf)
 }
