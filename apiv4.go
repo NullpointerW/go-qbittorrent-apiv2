@@ -154,7 +154,7 @@ func (c *Client) GetTorrentContents(hash string, indexes ...int) ([]TorrentFile,
 		for _, idx := range indexes {
 			idxes += strconv.Itoa(idx) + "|"
 		}
-		idxes=idxes[:len(idxes)-1]
+		idxes = idxes[:len(idxes)-1]
 		opt["indexes"] = idxes
 	}
 
@@ -199,6 +199,20 @@ func (c *Client) GetMainData(rid int) (Sync, error) {
 	return *s, nil
 }
 
+// RSS All RSS API methods are under "rss", e.g.: /api/v2/rss/methodName.
+func (c *Client) AddFolder(path string) error {
+	resp, err := c.postXwwwFormUrlencoded("rss/addFolder", optional{
+		"path": path,
+	})
+	io.Discard
+	resp.Body
+	err = RespOk(resp, err)
+	if err != nil {
+		return err
+	}
+}
+
+// Common Methods for HTTP Requests
 // Use POST request to send x-www-form-urlencoded encoding.
 func (c *Client) postXwwwFormUrlencoded(endpoint string, opts optional) (*http.Response, error) {
 	values := url.Values{}
@@ -307,4 +321,9 @@ func (c *Client) postMultipartFile(endpoint string, fileName string, opts option
 	}
 
 	return resp, nil
+}
+
+func nndBody(body io.ReadCloser) error {
+	_, err := io.Copy(io.Discard, body)
+	return err
 }
