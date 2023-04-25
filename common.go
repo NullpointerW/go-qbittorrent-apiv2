@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sync"
-
 	errwrp "github.com/pkg/errors"
 )
 

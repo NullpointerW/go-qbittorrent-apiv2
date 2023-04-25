@@ -110,6 +110,10 @@ func TestGetAllRssItem(t *testing.T) {
 		fmt.Printf("%+v", err)
 		t.FailNow()
 	}
-	item.GetWithUrl()
 	fmt.Println(item)
+	// i,f:=item.GetWithUrl("http://www.kisssub.org/rss-%E6%94%BE%E5%AD%A6%E5%90%8E%E5%A4%B1%E7%9C%A0%E7%9A%84%E4%BD%A0+%E5%96%B5%E8%90%8C%E5%A5%B6%E8%8C%B6%E5%B1%8B.xml")
+	// if f{
+	// 	fmt.Println(i)
+	// }
+	
 }
