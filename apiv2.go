@@ -273,6 +273,22 @@ func (c *Client) GetAllItems(withData bool) (RssItem, error) {
 	return *ri, nil
 }
 
+func (c *Client) MarkAsRead(itemPath, articleId string) error {
+	opt := optional{
+		"itemPath": itemPath,
+	}
+	if articleId != "" {
+		opt["articleId"] = articleId
+	}
+	resp, err := c.postXwwwFormUrlencoded("rss/markAsRead", opt)
+	err = RespOk(resp, err)
+	if err != nil {
+		return err
+	}
+	ignrBody(resp.Body)
+	return nil
+}
+
 // Common Methods for HTTP Requests
 // Use POST request to send x-www-form-urlencoded encoding.
 func (c *Client) postXwwwFormUrlencoded(endpoint string, opts optional) (*http.Response, error) {
@@ -383,5 +399,3 @@ func (c *Client) postMultipartFile(endpoint string, fileName string, opts option
 
 	return resp, nil
 }
-
-
