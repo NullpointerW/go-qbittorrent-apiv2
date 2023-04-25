@@ -1,4 +1,4 @@
-package qbt_apiv4
+package qbt_apiv2
 
 import (
 	"bytes"
@@ -204,12 +204,73 @@ func (c *Client) AddFolder(path string) error {
 	resp, err := c.postXwwwFormUrlencoded("rss/addFolder", optional{
 		"path": path,
 	})
-	io.Discard
-	resp.Body
 	err = RespOk(resp, err)
 	if err != nil {
 		return err
 	}
+	ignrBody(resp.Body)
+	return nil
+}
+
+func (c *Client) AddFeed(url, path string) error {
+	opt := optional{
+		"url": url,
+	}
+	if path != "" {
+		opt["path"] = path
+	}
+	resp, err := c.postXwwwFormUrlencoded("rss/addFeed", opt)
+	err = RespOk(resp, err)
+	if err != nil {
+		return err
+	}
+	ignrBody(resp.Body)
+	return nil
+}
+
+func (c *Client) RemoveItem(path string) error {
+	resp, err := c.postXwwwFormUrlencoded("rss/removeItem", optional{
+		"path": path,
+	})
+	err = RespOk(resp, err)
+	if err != nil {
+		return err
+	}
+	ignrBody(resp.Body)
+	return nil
+}
+
+func (c *Client) MoveItem(dst, src string) error {
+	resp, err := c.postXwwwFormUrlencoded("rss/moveItem", optional{
+		"itemPath": src,
+		"destPath": dst,
+	})
+	err = RespOk(resp, err)
+	if err != nil {
+		return err
+	}
+	ignrBody(resp.Body)
+	return nil
+}
+
+func (c *Client) GetAllItems(withData bool) (RssItem, error) {
+	opt := optional{}
+	if withData {
+		opt["withData"] = true
+	}
+	resp, err := c.postXwwwFormUrlencoded("rss/items", opt)
+	err = RespOk(resp, err)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	ri := new(RssItem)
+	json.Unmarshal(b, ri)
+	return *ri, nil
 }
 
 // Common Methods for HTTP Requests
@@ -323,7 +384,7 @@ func (c *Client) postMultipartFile(endpoint string, fileName string, opts option
 	return resp, nil
 }
 
-func nndBody(body io.ReadCloser) error {
+func ignrBody(body io.ReadCloser) error {
 	_, err := io.Copy(io.Discard, body)
 	return err
 }

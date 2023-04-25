@@ -1,8 +1,9 @@
-package qbt_apiv4
+package qbt_apiv2
 
 import (
 	"fmt"
 	"net/http"
+	"sync"
 
 	errwrp "github.com/pkg/errors"
 )
@@ -129,11 +130,49 @@ type Sync struct {
 	Torrents map[string]Torrent `json:"torrents"`
 }
 
+// map type for `rss/items` responed json schema
+type RssItem map[string]Item
+
+// get rss item via rss url
+// if the specified URL does not exist in these items, the returned bool value is false
+// otherwise it is true
+func (m RssItem) GetWithUrl(url string) (Item, bool) {
+	for _, it := range m {
+		if it.Url == url {
+			return it, true
+		}
+	}
+	return Item{}, false
+}
+
+// RSS Schema
+type Item struct {
+	Articles      []Article `json:"articles"`
+	HasError      bool      `json:"hasError"`
+	IsLoading     bool      `json:"isLoading"`
+	LastBuildDate string    `json:"lastBuildDate"`
+	Title         string    `json:"title"`
+	Uid           string    `json:"uid"`
+	Url           string    `json:"url"`
+}
+
+type Article struct {
+	Author      string `json:"author"`
+	Category    string `json:"category"`
+	Date        string `json:"date"`
+	Description string `json:"description"`
+	Id          string `json:"id"`
+	Link        string `json:"link"`
+	Title       string `json:"title"`
+	TorrentURL  string `json:"torrentURL"`
+	IsRead      bool   `json:"isRead,omitempty"`
+}
+
 func RespOk(resp *http.Response, err error) error {
 	if err != nil {
 		return err
 	} else if resp.Status != "200 OK" { // check for correct status code
-		return errwrp.Wrapf(ErrBadResponse, "status code:%s",resp.Status)
+		return errwrp.Wrapf(ErrBadResponse, "status code:%s", resp.Status)
 	} else {
 		return nil
 	}

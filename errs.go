@@ -1,4 +1,4 @@
-package qbt_apiv4
+package qbt_apiv2
 
 import "errors"
 

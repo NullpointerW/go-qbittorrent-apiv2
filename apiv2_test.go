@@ -1,4 +1,4 @@
-package qbt_apiv4
+package qbt_apiv2
 
 import (
 	"fmt"
@@ -98,4 +98,18 @@ func TestGetTorrnetContent(t *testing.T) {
 		t.FailNow()
 	}
 	fmt.Printf("%+v", tf)
+}
+
+func TestGetAllRssItem(t *testing.T) {
+	cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	item, err := cli.GetAllItems(true)
+	if err != nil {
+		fmt.Printf("%+v", err)
+		t.FailNow()
+	}
+	item.GetWithUrl()
+	fmt.Println(item)
 }
