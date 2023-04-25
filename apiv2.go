@@ -384,7 +384,4 @@ func (c *Client) postMultipartFile(endpoint string, fileName string, opts option
 	return resp, nil
 }
 
-func ignrBody(body io.ReadCloser) error {
-	_, err := io.Copy(io.Discard, body)
-	return err
-}
+

@@ -2,6 +2,7 @@ package qbt_apiv2
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"sync"
 
@@ -176,4 +177,9 @@ func RespOk(resp *http.Response, err error) error {
 	} else {
 		return nil
 	}
+}
+
+func ignrBody(body io.ReadCloser) error {
+	_, err := io.Copy(io.Discard, body)
+	return err
 }
