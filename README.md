@@ -11,7 +11,7 @@ Requires qBittorrent version ≥ v4.1.
 
 Some of the code is reused from this repository [superturkey650/go-qbittorrent](https://github.com/superturkey650/go-qbittorrent).
 
-#####TODO
+##### TODO
 At present, the API for [RSS](https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#rss-experimental) has been fully wrapped, as well as partially wrapping the API for torrent and sync. Welcome to submit PR to wrap all APIs.
 
 
