@@ -2,7 +2,6 @@ package qbt_apiv2
 
 import (
 	"bytes"
-	"errors"
 	errwrp "github.com/pkg/errors"
 	"golang.org/x/net/publicsuffix"
 	"io"
