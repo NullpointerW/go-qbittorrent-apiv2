@@ -183,7 +183,7 @@ func (c *Client) SetAoDLRule(ruleName string, ruleDef AutoDLRule) error {
 
 // Rename auto-downloading rule
 func (c *Client) RnAoDLRule(newName, oldName string) error {
-	resp, err := c.postXwwwFormUrlencoded("rss/setRule", optional{
+	resp, err := c.postXwwwFormUrlencoded("rss/renameRule", optional{
 		"ruleName":    oldName,
 		"newRuleName": newName,
 	})
@@ -196,13 +196,12 @@ func (c *Client) RnAoDLRule(newName, oldName string) error {
 }
 
 // Remove auto-downloading rule
-func (c *Client) RmAoDLRule(ruleName string, ruleDef AutoDLRule) error {
-	b, _ := json.Marshal(ruleDef)
+func (c *Client) RmAoDLRule(ruleName string) error {
+
 	opt := optional{
 		"ruleName": ruleName,
-		"ruleDef":  string(b),
 	}
-	resp, err := c.postXwwwFormUrlencoded("rss/setRule", opt)
+	resp, err := c.postXwwwFormUrlencoded("rss/removeRule", opt)
 	err = RespOk(resp, err)
 	if err != nil {
 		return err
@@ -212,7 +211,7 @@ func (c *Client) RmAoDLRule(ruleName string, ruleDef AutoDLRule) error {
 }
 
 // Get all auto-downloading rules
-func (c *Client) LsAoDLRule() (map[string]AutoDLRule, error) {
+func (c *Client) LsAutoDLRule() (map[string]AutoDLRule, error) {
 	resp, err := c.postXwwwFormUrlencoded("rss/rules", nil)
 	err = RespOk(resp, err)
 	if err != nil {
@@ -224,6 +223,24 @@ func (c *Client) LsAoDLRule() (map[string]AutoDLRule, error) {
 		return nil, err
 	}
 	var m map[string]AutoDLRule
+	json.Unmarshal(b, &m)
+	return m, nil
+}
+
+func (c *Client) LsArtMatchRlue(ruleName string) (map[string][]string, error) {
+	resp, err := c.postXwwwFormUrlencoded("rss/matchingArticles", optional{
+		"ruleName": ruleName,
+	})
+	err = RespOk(resp, err)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var m map[string][]string
 	json.Unmarshal(b, &m)
 	return m, nil
 }

@@ -143,7 +143,20 @@ func TestLsAoDLRule(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	m, err := cli.LsAoDLRule()
+	m, err := cli.LsAutoDLRule()
+	if err != nil {
+		fmt.Printf("%+v", err)
+		t.FailNow()
+	}
+	fmt.Println(m)
+}
+
+func TestLsArtMatchRlue(t *testing.T) {
+	cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	m,err:=cli.LsArtMatchRlue("testing")
 	if err != nil {
 		fmt.Printf("%+v", err)
 		t.FailNow()
