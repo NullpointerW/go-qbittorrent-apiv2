@@ -17,14 +17,14 @@ At present, the API for [RSS](https://github.com/qbittorrent/qBittorrent/wiki/We
 
 
 
-###Installation
+### Installation
 ---------
  go get in your module.
 ```
 $ go get github.com/NullpointerW/go-qbittorrent-apiv2
 ```
 
-###Usage
+### Usage
 ---------
 ``` go
     import (
