@@ -35,7 +35,7 @@ func main() {
 	// 'Bypass from localhost' setting is active.
 	// The parameters after 'host' can be ignored.
 	// e.g.:NewCli("http://localhost:8991")
-	cli, err := NewCli("http://localhost:8991", "admin", "123456")
+	cli, err := qbt.NewCli("http://localhost:8991", "admin", "123456")
 	if err != nil {
 		fmt.Printf("%+v\n", err)
 	}
