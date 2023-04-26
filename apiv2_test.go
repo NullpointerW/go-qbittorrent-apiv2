@@ -81,11 +81,14 @@ func TestGetMainData(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	sync, err := cli.GetMainData(1)
-	if err != nil {
-		panic(err)
+	for i := 0; i < 3; i++ {
+		sync, err := cli.GetMainData()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("%+v \n ============================== \n", sync)
+
 	}
-	fmt.Printf("%+v", sync)
 }
 
 func TestGetTorrnetContent(t *testing.T) {
@@ -133,5 +136,17 @@ func TestSetAoDLRule(t *testing.T) {
 		fmt.Printf("%+v", err)
 		t.FailNow()
 	}
+}
 
+func TestLsAoDLRule(t *testing.T) {
+	cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	m, err := cli.LsAoDLRule()
+	if err != nil {
+		fmt.Printf("%+v", err)
+		t.FailNow()
+	}
+	fmt.Println(m)
 }

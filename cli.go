@@ -17,6 +17,8 @@ import (
 type Client struct {
 	httpCli *http.Client
 	URL     string
+	// sync/maindata Parameter `rid`
+	rid int
 }
 
 // NewCli v2

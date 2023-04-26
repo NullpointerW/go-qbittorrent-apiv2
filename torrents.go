@@ -1,3 +1,6 @@
+// Torrent management
+// All Torrent management API methods are under "torrents",
+// e.g.: /api/v2/torrents/methodName.
 package qbt_apiv2
 
 import (
@@ -97,7 +100,6 @@ type TorrentFile struct {
 	Availability float64 `json:"availability"`
 }
 
-// Torrent management
 func (c *Client) AddNewTorrent(urlLink, path string) (*http.Response, error) {
 	ap, err := filepath.Abs(path)
 	if err != nil {

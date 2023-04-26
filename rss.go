@@ -1,3 +1,6 @@
+// RSS (experimental)
+// All RSS API methods are under "rss",
+// e.g.: /api/v2/rss/methodName.
 package qbt_apiv2
 
 import (
@@ -162,6 +165,7 @@ func (c *Client) RefreshItem(itemPath string) error {
 	return nil
 }
 
+// Set auto-downloading rule
 func (c *Client) SetAoDLRule(ruleName string, ruleDef AutoDLRule) error {
 	b, _ := json.Marshal(ruleDef)
 	opt := optional{
@@ -175,4 +179,51 @@ func (c *Client) SetAoDLRule(ruleName string, ruleDef AutoDLRule) error {
 	}
 	ignrBody(resp.Body)
 	return nil
+}
+
+// Rename auto-downloading rule
+func (c *Client) RnAoDLRule(newName, oldName string) error {
+	resp, err := c.postXwwwFormUrlencoded("rss/setRule", optional{
+		"ruleName":    oldName,
+		"newRuleName": newName,
+	})
+	err = RespOk(resp, err)
+	if err != nil {
+		return err
+	}
+	ignrBody(resp.Body)
+	return nil
+}
+
+// Remove auto-downloading rule
+func (c *Client) RmAoDLRule(ruleName string, ruleDef AutoDLRule) error {
+	b, _ := json.Marshal(ruleDef)
+	opt := optional{
+		"ruleName": ruleName,
+		"ruleDef":  string(b),
+	}
+	resp, err := c.postXwwwFormUrlencoded("rss/setRule", opt)
+	err = RespOk(resp, err)
+	if err != nil {
+		return err
+	}
+	ignrBody(resp.Body)
+	return nil
+}
+
+// Get all auto-downloading rules
+func (c *Client) LsAoDLRule() (map[string]AutoDLRule, error) {
+	resp, err := c.postXwwwFormUrlencoded("rss/rules", nil)
+	err = RespOk(resp, err)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var m map[string]AutoDLRule
+	json.Unmarshal(b, &m)
+	return m, nil
 }

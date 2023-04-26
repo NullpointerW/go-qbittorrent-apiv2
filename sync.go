@@ -1,3 +1,6 @@
+// Sync
+// Sync API implements requests for obtaining changes since the last request. All Sync API methods are under "sync"
+// e.g.: /api/v2/sync/{methodName}
 package qbt_apiv2
 
 import (
@@ -30,9 +33,7 @@ type Sync struct {
 	Torrents map[string]Torrent `json:"torrents"`
 }
 
-// Sync
-// Sync API implements requests for obtaining changes since the last request. All Sync API methods are under "sync"
-func (c *Client) GetMainData(rid int) (Sync, error) {
+func (c *Client) getMainData(rid int) (Sync, error) {
 	resp, err := c.postXwwwFormUrlencoded("sync/maindata", optional{
 		"rid": rid,
 	})
@@ -51,4 +52,13 @@ func (c *Client) GetMainData(rid int) (Sync, error) {
 		return Sync{}, err
 	}
 	return *s, nil
+}
+
+func (c *Client) GetMainData() (Sync, error) {
+	s, err := c.getMainData(c.rid)
+	if err != nil {
+		return Sync{}, err
+	}
+	c.rid = s.Rid
+	return s, nil
 }
