@@ -23,22 +23,23 @@ At present, the API for [RSS](https://github.com/qbittorrent/qBittorrent/wiki/We
 ```
 $ go get github.com/NullpointerW/go-qbittorrent-apiv2
 ```
-
 ### Usage
 ---------
-``` go
-    import (
-        qbt "github.com/NullpointerW/go-qbittorrent-apiv2"
-    )
-    // When connecting to qBittorrent on the local network and 
-    // 'Bypass from localhost' setting is active.
-    // The parameters after 'host' can be ignored.
-    // e.g.:NewCli("http://localhost:8991")
-    cli, err := NewCli("http://localhost:8991", "admin", "123456")
+``` go 
+import (
+	qbt "github.com/NullpointerW/go-qbittorrent-apiv2"
+)
+
+func main() {
+	// When connecting to qBittorrent on the local network and
+	// 'Bypass from localhost' setting is active.
+	// The parameters after 'host' can be ignored.
+	// e.g.:NewCli("http://localhost:8991")
+	cli, err := NewCli("http://localhost:8991", "admin", "123456")
 	if err != nil {
 		fmt.Printf("%+v\n", err)
 	}
-    torrnet, err := cli.TorrentList(optional{
+	torrnet, err := cli.TorrentList(optional{
 		"filter": "downloading",
 	})
 	if err != nil {
@@ -49,10 +50,10 @@ $ go get github.com/NullpointerW/go-qbittorrent-apiv2
 		fmt.Printf("%+v\n", err)
 	}
 	fmt.Println(torrnetProp.SavePath)
-    m, err := cli.LsAutoDLRule()
+	m, err := cli.LsAutoDLRule()
 	if err != nil {
 		fmt.Printf("%+v\n", err)
 	}
 	fmt.Println(m)
-
+}
 ```
