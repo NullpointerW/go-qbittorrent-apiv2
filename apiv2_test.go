@@ -158,7 +158,7 @@ func TestLsArtMatchRlue(t *testing.T) {
 	}
 	m,err:=cli.LsArtMatchRlue("testing")
 	if err != nil {
-		fmt.Printf("%+v", err)
+		fmt.Printf("%+v\n", err)
 		t.FailNow()
 	}
 	fmt.Println(m)
