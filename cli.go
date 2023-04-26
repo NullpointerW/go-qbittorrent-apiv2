@@ -58,7 +58,7 @@ func NewCli(url string, auth ...string) (*Client, error) {
 		return nil, err
 	}
 	if string(b) != "Ok." {
-		return nil, errors.New("login failed")
+		return nil, ErrLoginfailed
 	}
 
 	return client, nil
