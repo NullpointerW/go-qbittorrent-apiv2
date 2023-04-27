@@ -5,6 +5,7 @@ package qbt_apiv2
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"path/filepath"
 	"strconv"
@@ -99,15 +100,7 @@ type TorrentFile struct {
 	Availability float64 `json:"availability"`
 }
 
-func (c *Client) AddNewTorrent(urlLink, path string) error {
-	ap, err := filepath.Abs(path)
-	if err != nil {
-		return errwrp.Wrapf(err, "cannot conv abs_path %s", path)
-	}
-	opt := Optional{
-		"urls":     urlLink,
-		"savepath": ap,
-	}
+func (c *Client) AddNewTorrent(opt Optional) error {
 	resp, err := c.postMultipartData("torrents/add", opt)
 	err = RespOk(resp, err)
 	if err != nil {
@@ -117,6 +110,28 @@ func (c *Client) AddNewTorrent(urlLink, path string) error {
 		return err
 	}
 	return nil
+}
+
+func (c *Client) AddNewTorrentViaUrl(url, path string, tags ...string) error {
+	ap, err := filepath.Abs(path)
+	if err != nil {
+		return errwrp.Wrapf(err, "cannot conv abs_path %s", path)
+	}
+	opt := Optional{
+		"urls":     url,
+		"savepath": ap,
+	}
+	fmt.Println(len(tags))
+	if len(tags) > 0 {
+		var ts string
+		for _, t := range tags {
+			ts += t + ","
+		}
+		ts = ts[:len(ts)-1]
+		opt["tags"] = ts
+	}
+	err = c.AddNewTorrent(opt)
+	return err
 }
 
 func (c *Client) TorrentList(opt Optional) ([]BasicTorrent, error) {
