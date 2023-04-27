@@ -6,6 +6,8 @@ package qbt_apiv2
 import (
 	"encoding/json"
 	"io"
+
+	errwrp "github.com/pkg/errors"
 )
 
 // map type for `rss/items` responed json schema
@@ -77,14 +79,20 @@ func (c *Client) AddFolder(path string) error {
 
 func (c *Client) AddFeed(url, path string) error {
 	opt := optional{
-		"url": url,
-	}
-	if path != "" {
-		opt["path"] = path
+		"url":  url,
+		"path": path,
 	}
 	resp, err := c.postXwwwFormUrlencoded("rss/addFeed", opt)
 	err = RespOk(resp, err)
 	if err != nil {
+		if resp.StatusCode == 409 {
+			defer resp.Body.Close()
+			b, e := io.ReadAll(resp.Body)
+			if e != nil {
+				return err
+			}
+			return errwrp.WithMessage(err, string(b))
+		}
 		return err
 	}
 	ignrBody(resp.Body)
@@ -166,7 +174,7 @@ func (c *Client) RefreshItem(itemPath string) error {
 }
 
 // Set auto-downloading rule
-func (c *Client) SetAoDLRule(ruleName string, ruleDef AutoDLRule) error {
+func (c *Client) SetAutoDLRule(ruleName string, ruleDef AutoDLRule) error {
 	b, _ := json.Marshal(ruleDef)
 	opt := optional{
 		"ruleName": ruleName,
@@ -182,7 +190,7 @@ func (c *Client) SetAoDLRule(ruleName string, ruleDef AutoDLRule) error {
 }
 
 // Rename auto-downloading rule
-func (c *Client) RnAoDLRule(newName, oldName string) error {
+func (c *Client) RnAutoDLRule(newName, oldName string) error {
 	resp, err := c.postXwwwFormUrlencoded("rss/renameRule", optional{
 		"ruleName":    oldName,
 		"newRuleName": newName,
@@ -196,7 +204,7 @@ func (c *Client) RnAoDLRule(newName, oldName string) error {
 }
 
 // Remove auto-downloading rule
-func (c *Client) RmAoDLRule(ruleName string) error {
+func (c *Client) RmAutoDLRule(ruleName string) error {
 
 	opt := optional{
 		"ruleName": ruleName,

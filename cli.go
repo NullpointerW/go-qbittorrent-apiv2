@@ -40,24 +40,15 @@ func NewCli(url string, auth ...string) (*Client, error) {
 	nreq := len(auth) == 0
 
 	var (
-		resp *http.Response
-		err  error
+		err error
 	)
 	if nreq {
-		resp, err = client.Login("", "")
+		err = client.Login("", "")
 	} else {
-		resp, err = client.Login(auth[0], auth[1])
+		err = client.Login(auth[0], auth[1])
 	}
 	if err != nil {
 		return nil, err
-	}
-	defer resp.Body.Close()
-	b, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	if string(b) != "Ok." {
-		return nil, ErrLoginfailed
 	}
 
 	return client, nil

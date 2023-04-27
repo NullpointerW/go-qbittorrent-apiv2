@@ -2,7 +2,6 @@ package qbt_apiv2
 
 import (
 	"fmt"
-	"io"
 	"testing"
 )
 
@@ -28,17 +27,16 @@ func TestOpttoStringField(t *testing.T) {
 }
 
 func TestAddTorrnet(t *testing.T) {
-	link := `magnet:?xt=urn:btih:7827e38d4b7eac848829fadd8a3c6c28561d0f2c&tr=http%3a%2f%2ft.nyaatracker.com%2fannounce&tr=http%3a%2f%2ftracker.kamigami.org%3a2710%2fannounce&tr=http%3a%2f%2fshare.camoe.cn%3a8080%2fannounce&tr=http%3a%2f%2fopentracker.acgnx.se%2fannounce&tr=http%3a%2f%2fanidex.moe%3a6969%2fannounce&tr=http%3a%2f%2ft.acg.rip%3a6699%2fannounce&tr=https%3a%2f%2ftr.bangumi.moe%3a9696%2fannounce&tr=udp%3a%2f%2ftr.bangumi.moe%3a6969%2fannounce&tr=http%3a%2f%2fopen.acgtracker.com%3a1096%2fannounce&tr=udp%3a%2f%2ftracker.opentrackr.org%3a1337%2fannounce`
+	link := `magnet:?xt=urn:btih:52b36348d89881499ee85bcc7b287366b9fd49ce&tr=http://open.acgtracker.com:1096/announce`
 	cli, err := NewCli("http://localhost:8991", "admin", "123456")
 	if err != nil {
 		panic(err)
 	}
-	resp, err := cli.AddNewTorrent(link, "./")
+	err = cli.AddNewTorrent(link, "./")
 	if err != nil {
-		panic(err)
+		fmt.Printf("%+v\n", err)
 	}
-	b, _ := io.ReadAll(resp.Body)
-	fmt.Println(string(b))
+
 }
 
 func TestTorrnetList(t *testing.T) {
@@ -126,7 +124,7 @@ func TestSetAoDLRule(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	err = cli.SetAoDLRule("testing2", AutoDLRule{
+	err = cli.SetAutoDLRule("testing2", AutoDLRule{
 		Enabled:       false,
 		UseRegex:      false,
 		AffectedFeeds: []string{"http://www.kisssub.org/rss-%E6%94%BE%E5%AD%A6%E5%90%8E%E5%A4%B1%E7%9C%A0%E7%9A%84%E4%BD%A0+%E5%96%B5%E8%90%8C%E5%A5%B6%E8%8C%B6%E5%B1%8B.xml"},
@@ -156,10 +154,22 @@ func TestLsArtMatchRlue(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	m,err:=cli.LsArtMatchRlue("testing")
+	m, err := cli.LsArtMatchRlue("testing")
 	if err != nil {
 		fmt.Printf("%+v\n", err)
 		t.FailNow()
 	}
 	fmt.Println(m)
+}
+
+func TestAddFeeds(t *testing.T) {
+	cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	err = cli.AddFeed("http://www.kisssub.org/rss-%E4%B8%9C%E4%BA%AC%E7%8C%AB%E7%8C%AB.xml", "")
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		t.FailNow()
+	}
 }

@@ -7,6 +7,11 @@ import (
 	"net/http"
 )
 
+const (
+	ResponseBodyOK   = "Ok."
+	ResponseBodyFAIL = "Fails."
+)
+
 // optional parameters when sending HTTP requests
 type optional map[string]any
 
@@ -26,6 +31,18 @@ func RespOk(resp *http.Response, err error) error {
 	} else {
 		return nil
 	}
+}
+
+func RespBodyOk(body io.ReadCloser, bizErr error) error {
+	defer body.Close()
+	b, err := io.ReadAll(body)
+	if err != nil {
+		return err
+	}
+	if string(b) != ResponseBodyOK {
+		return bizErr
+	}
+	return nil
 }
 
 func ignrBody(body io.ReadCloser) error {
