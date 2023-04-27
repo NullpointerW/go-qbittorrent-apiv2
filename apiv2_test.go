@@ -46,7 +46,8 @@ func TestTorrnetList(t *testing.T) {
 	}
 
 	torrnet, err := cli.TorrentList(Optional{
-		"filter": "downloading",
+		"filter": "all",
+		"tag":    "subject251",
 	})
 	if err != nil {
 		panic(err)
