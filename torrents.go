@@ -29,7 +29,7 @@ type BasicTorrent struct {
 	NumSeeds      int     `json:"num_seeds"`
 	Priority      int     `json:"priority"`
 	Progress      float64 `json:"progress"`
-	Ratio         int     `json:"ratio"`
+	Ratio         float64 `json:"ratio"`
 	SavePath      string  `json:"save_path"`
 	SeqDl         bool    `json:"seq_dl"`
 	Size          int     `json:"size"`
