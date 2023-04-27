@@ -32,7 +32,7 @@ func TestAddTorrnet(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	err = cli.AddNewTorrentViaUrl(link, "./","subject251")
+	err = cli.AddNewTorrentViaUrl(link, "./", "subject251")
 	if err != nil {
 		fmt.Printf("%+v\n", err)
 	}
