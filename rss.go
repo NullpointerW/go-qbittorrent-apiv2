@@ -66,7 +66,7 @@ type AutoDLRule struct {
 
 // RSS All RSS API methods are under "rss", e.g.: /api/v2/rss/methodName.
 func (c *Client) AddFolder(path string) error {
-	resp, err := c.postXwwwFormUrlencoded("rss/addFolder", optional{
+	resp, err := c.postXwwwFormUrlencoded("rss/addFolder", Optional{
 		"path": path,
 	})
 	err = RespOk(resp, err)
@@ -78,7 +78,7 @@ func (c *Client) AddFolder(path string) error {
 }
 
 func (c *Client) AddFeed(url, path string) error {
-	opt := optional{
+	opt := Optional{
 		"url":  url,
 		"path": path,
 	}
@@ -100,7 +100,7 @@ func (c *Client) AddFeed(url, path string) error {
 }
 
 func (c *Client) RemoveItem(path string) error {
-	resp, err := c.postXwwwFormUrlencoded("rss/removeItem", optional{
+	resp, err := c.postXwwwFormUrlencoded("rss/removeItem", Optional{
 		"path": path,
 	})
 	err = RespOk(resp, err)
@@ -112,7 +112,7 @@ func (c *Client) RemoveItem(path string) error {
 }
 
 func (c *Client) MoveItem(dst, src string) error {
-	resp, err := c.postXwwwFormUrlencoded("rss/moveItem", optional{
+	resp, err := c.postXwwwFormUrlencoded("rss/moveItem", Optional{
 		"itemPath": src,
 		"destPath": dst,
 	})
@@ -125,7 +125,7 @@ func (c *Client) MoveItem(dst, src string) error {
 }
 
 func (c *Client) GetAllItems(withData bool) (RssItem, error) {
-	opt := optional{}
+	opt := Optional{}
 	if withData {
 		opt["withData"] = true
 	}
@@ -145,7 +145,7 @@ func (c *Client) GetAllItems(withData bool) (RssItem, error) {
 }
 
 func (c *Client) MarkAsRead(itemPath, articleId string) error {
-	opt := optional{
+	opt := Optional{
 		"itemPath": itemPath,
 	}
 	if articleId != "" {
@@ -161,7 +161,7 @@ func (c *Client) MarkAsRead(itemPath, articleId string) error {
 }
 
 func (c *Client) RefreshItem(itemPath string) error {
-	opt := optional{
+	opt := Optional{
 		"itemPath": itemPath,
 	}
 	resp, err := c.postXwwwFormUrlencoded("rss/refreshItem", opt)
@@ -176,7 +176,7 @@ func (c *Client) RefreshItem(itemPath string) error {
 // Set auto-downloading rule
 func (c *Client) SetAutoDLRule(ruleName string, ruleDef AutoDLRule) error {
 	b, _ := json.Marshal(ruleDef)
-	opt := optional{
+	opt := Optional{
 		"ruleName": ruleName,
 		"ruleDef":  string(b),
 	}
@@ -191,7 +191,7 @@ func (c *Client) SetAutoDLRule(ruleName string, ruleDef AutoDLRule) error {
 
 // Rename auto-downloading rule
 func (c *Client) RnAutoDLRule(newName, oldName string) error {
-	resp, err := c.postXwwwFormUrlencoded("rss/renameRule", optional{
+	resp, err := c.postXwwwFormUrlencoded("rss/renameRule", Optional{
 		"ruleName":    oldName,
 		"newRuleName": newName,
 	})
@@ -206,7 +206,7 @@ func (c *Client) RnAutoDLRule(newName, oldName string) error {
 // Remove auto-downloading rule
 func (c *Client) RmAutoDLRule(ruleName string) error {
 
-	opt := optional{
+	opt := Optional{
 		"ruleName": ruleName,
 	}
 	resp, err := c.postXwwwFormUrlencoded("rss/removeRule", opt)
@@ -236,7 +236,7 @@ func (c *Client) LsAutoDLRule() (map[string]AutoDLRule, error) {
 }
 
 func (c *Client) LsArtMatchRlue(ruleName string) (map[string][]string, error) {
-	resp, err := c.postXwwwFormUrlencoded("rss/matchingArticles", optional{
+	resp, err := c.postXwwwFormUrlencoded("rss/matchingArticles", Optional{
 		"ruleName": ruleName,
 	})
 	err = RespOk(resp, err)

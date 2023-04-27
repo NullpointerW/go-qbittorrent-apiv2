@@ -104,7 +104,7 @@ func (c *Client) AddNewTorrent(urlLink, path string) error {
 	if err != nil {
 		return errwrp.Wrapf(err, "cannot conv abs_path %s", path)
 	}
-	opt := optional{
+	opt := Optional{
 		"urls":     urlLink,
 		"savepath": ap,
 	}
@@ -119,7 +119,7 @@ func (c *Client) AddNewTorrent(urlLink, path string) error {
 	return nil
 }
 
-func (c *Client) TorrentList(opt optional) ([]BasicTorrent, error) {
+func (c *Client) TorrentList(opt Optional) ([]BasicTorrent, error) {
 	resp, err := c.postXwwwFormUrlencoded("torrents/info", opt)
 
 	err = RespOk(resp, err)
@@ -140,7 +140,7 @@ func (c *Client) TorrentList(opt optional) ([]BasicTorrent, error) {
 }
 
 func (c *Client) GetTorrentProperties(hash string) (Torrent, error) {
-	resp, err := c.postXwwwFormUrlencoded("torrents/properties", optional{
+	resp, err := c.postXwwwFormUrlencoded("torrents/properties", Optional{
 		"hash": hash,
 	})
 	err = RespOk(resp, err)
@@ -161,7 +161,7 @@ func (c *Client) GetTorrentProperties(hash string) (Torrent, error) {
 }
 
 func (c *Client) GetTorrentContents(hash string, indexes ...int) ([]TorrentFile, error) {
-	opt := optional{
+	opt := Optional{
 		"hash": hash,
 	}
 	if len(indexes) > 0 {

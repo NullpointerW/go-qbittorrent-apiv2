@@ -2,9 +2,10 @@ package qbt_apiv2
 
 import (
 	"fmt"
-	errwrp "github.com/pkg/errors"
 	"io"
 	"net/http"
+
+	errwrp "github.com/pkg/errors"
 )
 
 const (
@@ -12,10 +13,10 @@ const (
 	ResponseBodyFAIL = "Fails."
 )
 
-// optional parameters when sending HTTP requests
-type optional map[string]any
+// Optional parameters when sending HTTP requests
+type Optional map[string]any
 
-func (opt optional) StringField() map[string]string {
+func (opt Optional) StringField() map[string]string {
 	m := make(map[string]string)
 	for k, v := range opt {
 		m[k] = fmt.Sprintf("%v", v)

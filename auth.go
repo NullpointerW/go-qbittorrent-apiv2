@@ -1,13 +1,14 @@
 package qbt_apiv2
 
 import (
-	errwrp "github.com/pkg/errors"
 	"net/url"
+
+	errwrp "github.com/pkg/errors"
 )
 
 // Login
 func (c *Client) Login(username, password string) error {
-	opts := optional{
+	opts := Optional{
 		"username": username,
 		"password": password,
 	}

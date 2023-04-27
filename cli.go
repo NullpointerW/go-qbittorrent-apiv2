@@ -2,8 +2,6 @@ package qbt_apiv2
 
 import (
 	"bytes"
-	errwrp "github.com/pkg/errors"
-	"golang.org/x/net/publicsuffix"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -11,6 +9,9 @@ import (
 	"net/url"
 	"os"
 	"path"
+
+	errwrp "github.com/pkg/errors"
+	"golang.org/x/net/publicsuffix"
 )
 
 type Client struct {
@@ -56,7 +57,7 @@ func NewCli(url string, auth ...string) (*Client, error) {
 
 // Common Methods for HTTP Requests
 // Use POST request to send x-www-form-urlencoded encoding.
-func (c *Client) postXwwwFormUrlencoded(endpoint string, opts optional) (*http.Response, error) {
+func (c *Client) postXwwwFormUrlencoded(endpoint string, opts Optional) (*http.Response, error) {
 	values := url.Values{}
 	for k, v := range opts.StringField() {
 		values.Set(k, v)
@@ -77,7 +78,7 @@ func (c *Client) postXwwwFormUrlencoded(endpoint string, opts optional) (*http.R
 }
 
 // writeOptions will write a map to the buffer through multipart.NewWriter
-func writeOptions(writer *multipart.Writer, opts optional) {
+func writeOptions(writer *multipart.Writer, opts Optional) {
 	ws := opts.StringField()
 	for key, val := range ws {
 		writer.WriteField(key, val)
@@ -103,7 +104,7 @@ func (c *Client) postMultipart(endpoint string, buffer bytes.Buffer, contentType
 }
 
 // postMultipartData will perform a multiple part POST request without a file
-func (c *Client) postMultipartData(endpoint string, opts optional) (*http.Response, error) {
+func (c *Client) postMultipartData(endpoint string, opts Optional) (*http.Response, error) {
 	var buffer bytes.Buffer
 	writer := multipart.NewWriter(&buffer)
 
@@ -125,7 +126,7 @@ func (c *Client) postMultipartData(endpoint string, opts optional) (*http.Respon
 }
 
 // postMultipartFile will perform a multiple part POST request with a file
-func (c *Client) postMultipartFile(endpoint string, fileName string, opts optional) (*http.Response, error) {
+func (c *Client) postMultipartFile(endpoint string, fileName string, opts Optional) (*http.Response, error) {
 	var buffer bytes.Buffer
 	writer := multipart.NewWriter(&buffer)
 

@@ -14,7 +14,7 @@ func TestLogin(t *testing.T) {
 }
 
 func TestOpttoStringField(t *testing.T) {
-	opt := optional{
+	opt := Optional{
 		"count": 3,
 		"b":     []byte("tom"),
 		"name":  "tom",
@@ -45,7 +45,7 @@ func TestTorrnetList(t *testing.T) {
 		panic(err)
 	}
 
-	torrnet, err := cli.TorrentList(optional{
+	torrnet, err := cli.TorrentList(Optional{
 		"filter": "downloading",
 	})
 	if err != nil {
@@ -60,7 +60,7 @@ func TestGetTorrentProperties(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	torrnet, err := cli.TorrentList(optional{
+	torrnet, err := cli.TorrentList(Optional{
 		"filter": "downloading",
 	})
 	if err != nil {

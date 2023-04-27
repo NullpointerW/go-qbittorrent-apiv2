@@ -34,7 +34,7 @@ type Sync struct {
 }
 
 func (c *Client) getMainData(rid int) (Sync, error) {
-	resp, err := c.postXwwwFormUrlencoded("sync/maindata", optional{
+	resp, err := c.postXwwwFormUrlencoded("sync/maindata", Optional{
 		"rid": rid,
 	})
 	err = RespOk(resp, err)
