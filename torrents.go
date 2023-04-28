@@ -13,34 +13,63 @@ import (
 	errwrp "github.com/pkg/errors"
 )
 
-// BasicTorrent holds a basic torrent object from qbittorrent
-type BasicTorrent struct {
-	AddedOn       int     `json:"added_on"`
-	Category      string  `json:"category"`
-	CompletionOn  int64   `json:"completion_on"`
-	Dlspeed       int     `json:"dlspeed"`
-	Eta           int     `json:"eta"`
-	ForceStart    bool    `json:"force_start"`
-	Hash          string  `json:"hash"`
-	Name          string  `json:"name"`
-	NumComplete   int     `json:"num_complete"`
-	NumIncomplete int     `json:"num_incomplete"`
-	NumLeechs     int     `json:"num_leechs"`
-	NumSeeds      int     `json:"num_seeds"`
-	Priority      int     `json:"priority"`
-	Progress      float64 `json:"progress"`
-	Ratio         int     `json:"ratio"`
-	SavePath      string  `json:"save_path"`
-	SeqDl         bool    `json:"seq_dl"`
-	Size          int     `json:"size"`
-	State         string  `json:"state"`
-	SuperSeeding  bool    `json:"super_seeding"`
-	Upspeed       int     `json:"upspeed"`
+// Torrent holds a basic torrent object from qbittorrent
+// which is `sync/maindata` ,`torrents/info` returned
+type Torrent struct {
+	AddedOn           int     `json:"added_on"`
+	AmountLeft        int     `json:"amount_left"`
+	AutoTmm           bool    `json:"auto_tmm"`
+	Availability      float64 `json:"availability"`
+	Category          string  `json:"category"`
+	Completed         int     `json:"completed"`
+	CompletionOn      int     `json:"completion_on"`
+	ContentPath       string  `json:"content_path"`
+	DLLimit           int     `json:"dl_limit"`
+	Dlspeed           int     `json:"dlspeed"`
+	DownloadPath      string  `json:"download_path"`
+	Downloaded        int     `json:"downloaded"`
+	DownloadedSession int     `json:"downloaded_session"`
+	Eta               int     `json:"eta"`
+	FLPiecePrio       bool    `json:"f_l_piece_prio"`
+	ForceStart        bool    `json:"force_start"`
+	Hash              string  `json:"hash"`
+	InfohashV1        string  `json:"infohash_v1"`
+	InfohashV2        string  `json:"infohash_v2"`
+	LastActivity      int     `json:"last_activity"`
+	MagnetURI         string  `json:"magnet_uri"`
+	MaxRatio          float64 `json:"max_ratio"`
+	MaxSeedingTime    int     `json:"max_seeding_time"`
+	Name              string  `json:"name"`
+	NumComplete       int     `json:"num_complete"`
+	NumIncomplete     int     `json:"num_incomplete"`
+	NumLeechs         int     `json:"num_leechs"`
+	NumSeeds          int     `json:"num_seeds"`
+	Priority          int     `json:"priority"`
+	Progress          float64 `json:"progress"`
+	Ratio             float64 `json:"ratio"`
+	RatioLimit        float64 `json:"ratio_limit"`
+	SavePath          string  `json:"save_path"`
+	SeedingTime       int     `json:"seeding_time"`
+	SeedingTimeLimit  int     `json:"seeding_time_limit"`
+	SeenComplete      int     `json:"seen_complete"`
+	SeqDL             bool    `json:"seq_dl"`
+	Size              int     `json:"size"`
+	State             string  `json:"state"`
+	SuperSeeding      bool    `json:"super_seeding"`
+	Tags              string  `json:"tags"`
+	TimeActive        int     `json:"time_active"`
+	TotalSize         int     `json:"total_size"`
+	Tracker           string  `json:"tracker"`
+	TrackersCount     int     `json:"trackers_count"`
+	UpLimit           int     `json:"up_limit"`
+	Uploaded          int     `json:"uploaded"`
+	UploadedSession   int     `json:"uploaded_session"`
+	Upspeed           int     `json:"upspeed"`
 }
 
-// Torrent holds a torrent object from qbittorrent
+// TorrentProp holds a torrent object from qbittorrent
 // with more information than BasicTorrent
-type Torrent struct {
+type TorrentProp struct {
 	AdditionDate           int     `json:"addition_date"`
 	Comment                string  `json:"comment"`
 	CompletionDate         int     `json:"completion_date"`
@@ -134,7 +163,7 @@ func (c *Client) AddNewTorrentViaUrl(url, path string, tags ...string) error {
 	return err
 }
 
-func (c *Client) TorrentList(opt Optional) ([]BasicTorrent, error) {
+func (c *Client) TorrentList(opt Optional) ([]Torrent, error) {
 	resp, err := c.postXwwwFormUrlencoded("torrents/info", opt)
 
 	err = RespOk(resp, err)
@@ -146,7 +175,7 @@ func (c *Client) TorrentList(opt Optional) ([]BasicTorrent, error) {
 	if err != nil {
 		return nil, err
 	}
-	bt := new([]BasicTorrent)
+	bt := new([]Torrent)
 	err = json.Unmarshal(b, bt)
 	if err != nil {
 		return nil, err
@@ -154,23 +183,23 @@ func (c *Client) TorrentList(opt Optional) ([]BasicTorrent, error) {
 	return *bt, nil
 }
 
-func (c *Client) GetTorrentProperties(hash string) (Torrent, error) {
+func (c *Client) GetTorrentProperties(hash string) (TorrentProp, error) {
 	resp, err := c.postXwwwFormUrlencoded("torrents/properties", Optional{
 		"hash": hash,
 	})
 	err = RespOk(resp, err)
 	if err != nil {
-		return Torrent{}, err
+		return TorrentProp{}, err
 	}
 	defer resp.Body.Close()
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return Torrent{}, err
+		return TorrentProp{}, err
 	}
-	t := new(Torrent)
+	t := new(TorrentProp)
 	err = json.Unmarshal(b, t)
 	if err != nil {
-		return Torrent{}, err
+		return TorrentProp{}, err
 	}
 	return *t, nil
 }

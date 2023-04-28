@@ -9,6 +9,7 @@ func TestLogin(t *testing.T) {
 	cli, err := NewCli("http://localhost:8991", "admin", "123456")
 	if err != nil {
 		fmt.Println(err)
+		t.FailNow()
 	}
 	fmt.Printf("%#+v", cli)
 }
@@ -27,7 +28,7 @@ func TestOpttoStringField(t *testing.T) {
 }
 
 func TestAddTorrnet(t *testing.T) {
-	link := `magnet:?xt=urn:btih:52b36348d89881499ee85bcc7b287366b9fd49ce&tr=http://open.acgtracker.com:1096/announce`
+	link := `magnet:?xt=urn:btih:16abb2f5bcb405b8ac9d952345f87c87a6af85cc&tr=http://open.acgtracker.com:1096/announce`
 	cli, err := NewCli("http://localhost:8991", "admin", "123456")
 	if err != nil {
 		panic(err)
@@ -35,6 +36,7 @@ func TestAddTorrnet(t *testing.T) {
 	err = cli.AddNewTorrentViaUrl(link, "./", "subject251")
 	if err != nil {
 		fmt.Printf("%+v\n", err)
+		t.FailNow()
 	}
 
 }
@@ -47,7 +49,7 @@ func TestTorrnetList(t *testing.T) {
 
 	torrnet, err := cli.TorrentList(Optional{
 		"filter": "all",
-		"tag":    "subject251",
+		// "tag":    "subject251",
 	})
 	if err != nil {
 		panic(err)
