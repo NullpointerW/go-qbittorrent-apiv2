@@ -176,3 +176,27 @@ func TestAddFeeds(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestDelTorr(t *testing.T) {
+	cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	err = cli.DelTorrentsFs("79d4e6885d8c796c114ce912b1e612c0a97b01e9","940c46c2ba144ba90fa95278f8dbc12dd52036c0")
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		t.FailNow()
+	}
+}
+
+func TestDelTags(t *testing.T){
+	cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	err = cli.DelTags("123","456")
+	if err != nil {
+		fmt.Printf("%+v\n", err)
+		t.FailNow()
+	}
+}

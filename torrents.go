@@ -9,6 +9,7 @@ import (
 	"io"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	errwrp "github.com/pkg/errors"
 )
@@ -233,4 +234,37 @@ func (c *Client) GetTorrentContents(hash string, indexes ...int) ([]TorrentFile,
 		return nil, err
 	}
 	return *tf, nil
+}
+
+func (c *Client) DelTorrents(delfile bool, hashes ...string) error {
+	hs := strings.Join(hashes, "|")
+	opt := Optional{
+		"hashes":      hs,
+		"deleteFiles": delfile,
+	}
+	resp, err := c.postXwwwFormUrlencoded("torrents/delete", opt)
+	err = RespOk(resp, err)
+	if err != nil {
+		return err
+	}
+	ignrBody(resp.Body)
+	return nil
+}
+
+func (c *Client) DelTorrentsFs(hashes ...string) error {
+	return c.DelTorrents(true, hashes...)
+}
+
+func (c *Client) DelTags(tags ...string) error {
+	ts := strings.Join(tags, ",")
+	opt := Optional{
+		"tags": ts,
+	}
+	resp, err := c.postXwwwFormUrlencoded("torrents/deleteTags", opt)
+	err = RespOk(resp, err)
+	if err != nil {
+		return err
+	}
+	ignrBody(resp.Body)
+	return nil
 }
