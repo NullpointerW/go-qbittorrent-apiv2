@@ -151,7 +151,6 @@ func (c *Client) AddNewTorrentViaUrl(url, path string, tags ...string) error {
 		"urls":     url,
 		"savepath": ap,
 	}
-	fmt.Println(len(tags))
 	if len(tags) > 0 {
 		var ts string
 		for _, t := range tags {
