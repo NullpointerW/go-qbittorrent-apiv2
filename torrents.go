@@ -5,7 +5,6 @@ package qbt_apiv2
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"path/filepath"
 	"strconv"
