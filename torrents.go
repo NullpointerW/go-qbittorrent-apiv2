@@ -266,3 +266,18 @@ func (c *Client) DelTags(tags ...string) error {
 	ignrBody(resp.Body)
 	return nil
 }
+
+func (c *Client) RenameFile(hash, old, new string) error {
+	opt := Optional{
+		"hash":    hash,
+		"oldPath": old,
+		"newPath": new,
+	}
+	resp, err := c.postXwwwFormUrlencoded("torrents/renameFile", opt)
+	err = RespOk(resp, err)
+	if err != nil {
+		return err
+	}
+	ignrBody(resp.Body)
+	return nil
+}

@@ -182,21 +182,34 @@ func TestDelTorr(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	err = cli.DelTorrentsFs("79d4e6885d8c796c114ce912b1e612c0a97b01e9","940c46c2ba144ba90fa95278f8dbc12dd52036c0")
+	err = cli.DelTorrentsFs("79d4e6885d8c796c114ce912b1e612c0a97b01e9", "940c46c2ba144ba90fa95278f8dbc12dd52036c0")
 	if err != nil {
 		fmt.Printf("%+v\n", err)
 		t.FailNow()
 	}
 }
 
-func TestDelTags(t *testing.T){
+func TestDelTags(t *testing.T) {
 	cli, err := NewCli("http://localhost:8991")
 	if err != nil {
 		panic(err)
 	}
-	err = cli.DelTags("123","456")
+	err = cli.DelTags("123", "456")
 	if err != nil {
 		fmt.Printf("%+v\n", err)
 		t.FailNow()
+	}
+}
+
+func TestRenameFile(t *testing.T) {
+	cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	err = cli.RenameFile("385191f125783e4dc16689f0ed7b5cf00961155d",
+		"[UHA-WINGS][Tengoku Daimakyou][06][x264 1080p][CHS].mp4",
+		"es103.mp4")
+	if err != nil {
+		t.Error(err)
 	}
 }
