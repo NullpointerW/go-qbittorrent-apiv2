@@ -213,3 +213,25 @@ func TestRenameFile(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestAddCategory(t *testing.T) {
+	cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	err = cli.AddCategory("test", "")
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestRmCategoies(t *testing.T) {
+	cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	err = cli.RmCategoies("test")
+	if err != nil {
+		t.Error(err)
+	}
+}

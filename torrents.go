@@ -281,3 +281,33 @@ func (c *Client) RenameFile(hash, old, new string) error {
 	ignrBody(resp.Body)
 	return nil
 }
+
+func (c *Client) AddCategory(categoryName, savePath string) error {
+	opt := Optional{
+		"category": categoryName,
+	}
+	if savePath != "" {
+		opt["savePath"] = savePath
+	}
+	resp, err := c.postXwwwFormUrlencoded("torrents/createCategory", opt)
+	err = RespOk(resp, err)
+	if err != nil {
+		return err
+	}
+	ignrBody(resp.Body)
+	return nil
+}
+
+func (c *Client) RmCategoies(categories ...string) error {
+	categs := strings.Join(categories, "\n")
+	opt := Optional{
+		"categories": categs,
+	}
+	resp, err := c.postXwwwFormUrlencoded("torrents/removeCategories", opt)
+	err = RespOk(resp, err)
+	if err != nil {
+		return err
+	}
+	ignrBody(resp.Body)
+	return nil
+}
