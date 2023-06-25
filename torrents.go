@@ -129,6 +129,17 @@ type TorrentFile struct {
 	Availability float64 `json:"availability"`
 }
 
+type File struct {
+	Availability float64 `json:"availability"`
+	Index        int     `json:"index"`
+	Name         string  `json:"name"`
+	PieceRange   []int   `json:"piece_range"`
+	Priority     int     `json:"priority"`
+	Progress     float64 `json:"progress"`
+	Size         int     `json:"size"`
+	IsSeed       bool    `json:"is_seed"`
+}
+
 func (c *Client) AddNewTorrent(opt Optional) error {
 	resp, err := c.postMultipartData("torrents/add", opt)
 	err = RespOk(resp, err)
@@ -310,4 +321,32 @@ func (c *Client) RmCategoies(categories ...string) error {
 	}
 	ignrBody(resp.Body)
 	return nil
+}
+
+func (c *Client) Files(hash string, indexs ...string) ([]File, error) {
+	idxs := ""
+	if len(indexs) != 0 {
+		idxs = strings.Join(indexs, "|")
+	}
+
+	opt := Optional{
+		"hash": hash,
+	}
+	if idxs != "" {
+		opt["indexes"] = idxs
+	}
+	resp, err := c.postXwwwFormUrlencoded("torrents/files", opt)
+	if err != nil {
+		return nil, err
+	}
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var fs []File
+	err = json.Unmarshal(b, &fs)
+	if err != nil {
+		return nil, err
+	}
+	return fs, nil
 }

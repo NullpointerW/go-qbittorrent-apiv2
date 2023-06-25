@@ -235,3 +235,15 @@ func TestRmCategoies(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestFiles(t *testing.T) {
+	cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	fs, err := cli.Files("5ec234d089a09b381e5bc4f7b82241689b5457fd")
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(fs)
+}
