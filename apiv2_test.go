@@ -247,3 +247,38 @@ func TestFiles(t *testing.T) {
 	}
 	fmt.Println(fs)
 }
+
+func TestPreferences(t *testing.T) {
+	cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	cfg, err := cli.GetPreferences()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	fmt.Println(cfg)
+}
+
+func TestSetPreferences(t *testing.T) {
+	cli, err := NewCli("http://localhost:10086")
+	if err != nil {
+		panic(err)
+	}
+	cfg, err := cli.GetPreferences()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	cfg.RSSAutoDownloadingEnabled = true
+	cfg.RSSProcessingEnabled = true
+	cfg.RSSMaxArticlesPerFeed = 50
+	cfg.RSSRefreshInterval = 25
+	err = cli.SetPreferences(cfg)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+}
