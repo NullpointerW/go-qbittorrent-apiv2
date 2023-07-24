@@ -275,7 +275,16 @@ func TestSetPreferences(t *testing.T) {
 	cfg.RSSProcessingEnabled = true
 	cfg.RSSMaxArticlesPerFeed = 50
 	cfg.RSSRefreshInterval = 25
+	cfg.ProxyType = Http
+	cfg.ProxyIP = "127.0.0.1"
+	cfg.ProxyPort = 7890
 	err = cli.SetPreferences(cfg)
+	// b, err := json.Marshal(cfg)
+	// if err != nil {
+	// 	t.Error(err)
+	// 	t.FailNow()
+	// }
+	// fmt.Println(string(b))
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

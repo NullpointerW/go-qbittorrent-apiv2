@@ -5,6 +5,16 @@ import (
 	"io"
 )
 
+type proxyTyp int
+
+const (
+	Http    proxyTyp = iota + 1 // HTTP proxy without authentication
+	Socks5                      // SOCKS5 proxy without authentication
+	HttpA                       // HTTP proxy with authentication
+	Socks5A                     // SOCKS5 proxy with authentication
+	Socks4                      // SOCKS4 proxy without authentication
+)
+
 type Config struct {
 	AddTrackers                        string         `json:"add_trackers"`
 	AddTrackersEnabled                 bool           `json:"add_trackers_enabled"`
@@ -112,7 +122,7 @@ type Config struct {
 	ProxyPeerConnections               bool           `json:"proxy_peer_connections"`
 	ProxyPort                          int            `json:"proxy_port"`
 	ProxyTorrentsOnly                  bool           `json:"proxy_torrents_only"`
-	ProxyType                          int            `json:"proxy_type"`
+	ProxyType                          proxyTyp            `json:"proxy_type"`
 	ProxyUsername                      string         `json:"proxy_username"`
 	QueueingEnabled                    bool           `json:"queueing_enabled"`
 	RandomPort                         bool           `json:"random_port"`
