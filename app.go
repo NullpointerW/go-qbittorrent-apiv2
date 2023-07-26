@@ -122,7 +122,7 @@ type Config struct {
 	ProxyPeerConnections               bool           `json:"proxy_peer_connections"`
 	ProxyPort                          int            `json:"proxy_port"`
 	ProxyTorrentsOnly                  bool           `json:"proxy_torrents_only"`
-	ProxyType                          proxyTyp            `json:"proxy_type"`
+	ProxyType                          proxyTyp       `json:"proxy_type"`
 	ProxyUsername                      string         `json:"proxy_username"`
 	QueueingEnabled                    bool           `json:"queueing_enabled"`
 	RandomPort                         bool           `json:"random_port"`
@@ -221,4 +221,30 @@ func (c *Client) SetPreferences(cfg Config) (err error) {
 	}
 	ignrBody(resp.Body)
 	return nil
+}
+
+func (c *Client) GetVersion() (ver string, err error) {
+	resp, err := c.postXwwwFormUrlencoded("app/version", nil)
+	err = RespOk(resp, err)
+	if err != nil {
+		return "", err
+	}
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
+}
+
+func (c *Client) GetApiVersion() (ver string, err error) {
+	resp, err := c.postXwwwFormUrlencoded("app/webapiVersion", nil)
+	err = RespOk(resp, err)
+	if err != nil {
+		return "", err
+	}
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	return string(b), nil
 }

@@ -275,8 +275,8 @@ func TestSetPreferences(t *testing.T) {
 	cfg.RSSProcessingEnabled = true
 	cfg.RSSMaxArticlesPerFeed = 50
 	cfg.RSSRefreshInterval = 25
-	cfg.ProxyType = Http
-	cfg.ProxyIP = "127.0.0.1"
+	cfg.ProxyType = HttpA
+	cfg.ProxyIP = "localhost"
 	cfg.ProxyPort = 7890
 	err = cli.SetPreferences(cfg)
 	// b, err := json.Marshal(cfg)
@@ -290,4 +290,43 @@ func TestSetPreferences(t *testing.T) {
 		t.FailNow()
 	}
 
+}
+
+func TestGetVersion(t *testing.T) {
+	cli, err := NewCli("http://localhost:10086")
+	if err != nil {
+		panic(err)
+	}
+	ver, err := cli.GetVersion()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	fmt.Println(ver)
+}
+
+func TestGetApiVersion(t *testing.T) {
+	cli, err := NewCli("http://localhost:10086")
+	if err != nil {
+		panic(err)
+	}
+	ver, err := cli.GetApiVersion()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	fmt.Println(ver)
+}
+
+func TestRenameFolder(t *testing.T) {
+	cli, err := NewCli("http://localhost:10086")
+	if err != nil {
+		panic(err)
+	}
+	err = cli.RenameFolder("385191f125783e4dc16689f0ed7b5cf00961155d",
+		"[UHA-WINGS][Tengoku Daimakyou]",
+		"es103")
+	if err != nil {
+		t.Error(err)
+	}
 }
