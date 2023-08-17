@@ -330,3 +330,14 @@ func TestRenameFolder(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestRemoveItem(t *testing.T) {
+	cli, err := NewCli("http://localhost:10086")
+	if err != nil {
+		panic(err)
+	}
+	err = cli.RemoveItem("385191f125783e4dc16689f0ed7b5cf00961155d")
+	if err != nil {
+		t.Error(err)
+	}
+}

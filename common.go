@@ -28,7 +28,7 @@ func RespOk(resp *http.Response, err error) error {
 	if err != nil {
 		return err
 	} else if resp.Status != "200 OK" { // check for correct status code
-		return errwrp.Wrapf(ErrBadResponse, "status code:%s", resp.Status)
+		return errwrp.Errorf("%v: %s", ErrBadResponse, resp.Status)
 	} else {
 		return nil
 	}

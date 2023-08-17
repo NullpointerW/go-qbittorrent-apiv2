@@ -5,9 +5,8 @@ package qbt_apiv2
 
 import (
 	"encoding/json"
-	"io"
-
 	errwrp "github.com/pkg/errors"
+	"io"
 )
 
 // map type for `rss/items` responed json schema
@@ -105,9 +104,16 @@ func (c *Client) RemoveItem(path string) error {
 	})
 	err = RespOk(resp, err)
 	if err != nil {
+		if resp.StatusCode == 409 {
+			defer resp.Body.Close()
+			b, e := io.ReadAll(resp.Body)
+			if e != nil {
+				return err
+			}
+			return errwrp.Errorf("%v: %s", err, string(b))
+		}
 		return err
 	}
-	ignrBody(resp.Body)
 	return nil
 }
 
