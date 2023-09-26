@@ -5,12 +5,11 @@ package qbt_apiv2
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"path/filepath"
 	"strconv"
 	"strings"
-
-	errwrp "github.com/pkg/errors"
 )
 
 // Torrent holds a basic torrent object from qbittorrent
@@ -155,7 +154,7 @@ func (c *Client) AddNewTorrent(opt Optional) error {
 func (c *Client) AddNewTorrentViaUrl(url, path string, tags ...string) error {
 	ap, err := filepath.Abs(path)
 	if err != nil {
-		return errwrp.Wrapf(err, "cannot conv abs_path %s", path)
+		return fmt.Errorf("cannot conv abs_path: %s: %w ", path, err)
 	}
 	opt := Optional{
 		"urls":     url,

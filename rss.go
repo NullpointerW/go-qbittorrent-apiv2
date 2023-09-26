@@ -5,14 +5,14 @@ package qbt_apiv2
 
 import (
 	"encoding/json"
-	errwrp "github.com/pkg/errors"
+	"fmt"
 	"io"
 )
 
 // map type for `rss/items` responed json schema
 type RssItem map[string]Item
 
-// get rss item via rss url
+// GetWithUrl get rss item via rss url
 // if the specified URL does not exist in these items, the returned bool value is false
 // otherwise it is true
 func (m RssItem) GetWithUrl(url string) (Item, bool) {
@@ -24,7 +24,7 @@ func (m RssItem) GetWithUrl(url string) (Item, bool) {
 	return Item{}, false
 }
 
-// RSS Schema
+// Item RSS Schema
 type Item struct {
 	Articles      []Article `json:"articles"`
 	HasError      bool      `json:"hasError"`
@@ -90,7 +90,7 @@ func (c *Client) AddFeed(url, path string) error {
 			if e != nil {
 				return err
 			}
-			return errwrp.WithMessage(err, string(b))
+			return fmt.Errorf(string(b)+": %w", err)
 		}
 		return err
 	}
@@ -110,7 +110,7 @@ func (c *Client) RemoveItem(path string) error {
 			if e != nil {
 				return err
 			}
-			return errwrp.Errorf("%v: %s", err, string(b))
+			return fmt.Errorf(string(b)+": %w", err)
 		}
 		return err
 	}

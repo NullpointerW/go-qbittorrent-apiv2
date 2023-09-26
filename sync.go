@@ -9,7 +9,7 @@ import (
 )
 
 // Sync holds the sync response struct which contains
-// the server state and a map of infohashes to Torrents
+// the server state and a map of info hashes to Torrents
 type Sync struct {
 	Categories map[string]struct {
 		Name     string `json:"name"`

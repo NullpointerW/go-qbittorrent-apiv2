@@ -2,6 +2,7 @@ package qbt_apiv2
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -10,7 +11,6 @@ import (
 	"os"
 	"path"
 
-	errwrp "github.com/pkg/errors"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -65,14 +65,14 @@ func (c *Client) postXwwwFormUrlencoded(endpoint string, opts Optional) (*http.R
 
 	req, err := http.NewRequest("POST", c.URL+endpoint, bytes.NewBufferString(values.Encode()))
 	if err != nil {
-		return nil, errwrp.Wrap(err, "error creating request")
+		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := c.httpCli.Do(req)
 	if err != nil {
-		return nil, errwrp.Wrap(err, "failed to perform request")
+		return nil, fmt.Errorf("failed to perform request: %w", err)
 	}
 	return resp, nil
 }
@@ -89,7 +89,7 @@ func writeOptions(writer *multipart.Writer, opts Optional) {
 func (c *Client) postMultipart(endpoint string, buffer bytes.Buffer, contentType string) (*http.Response, error) {
 	req, err := http.NewRequest("POST", c.URL+endpoint, &buffer)
 	if err != nil {
-		return nil, errwrp.Wrap(err, "error creating request")
+		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 
 	// add the content-type so qbittorrent knows what to expect
@@ -97,7 +97,7 @@ func (c *Client) postMultipart(endpoint string, buffer bytes.Buffer, contentType
 
 	resp, err := c.httpCli.Do(req)
 	if err != nil {
-		return nil, errwrp.Wrap(err, "failed to perform request")
+		return nil, fmt.Errorf("failed to perform request: %w", err)
 	}
 
 	return resp, nil
@@ -114,7 +114,7 @@ func (c *Client) postMultipartData(endpoint string, opts Optional) (*http.Respon
 
 	// close the writer before doing request to get closing line on multipart request
 	if err := writer.Close(); err != nil {
-		return nil, errwrp.Wrap(err, "failed to close writer")
+		return nil, fmt.Errorf("failed to close writer: %w", err)
 	}
 
 	resp, err := c.postMultipart(endpoint, buffer, writer.FormDataContentType())
@@ -133,7 +133,7 @@ func (c *Client) postMultipartFile(endpoint string, fileName string, opts Option
 	// open the file for reading
 	file, err := os.Open(fileName)
 	if err != nil {
-		return nil, errwrp.Wrap(err, "error opening file")
+		return nil, fmt.Errorf("error opening file: %w", err)
 	}
 	// defer the closing of the file until the end of function
 	// so we can still copy its contents
@@ -142,7 +142,7 @@ func (c *Client) postMultipartFile(endpoint string, fileName string, opts Option
 	// create form for writing the file to and give it the filename
 	formWriter, err := writer.CreateFormFile("torrents", path.Base(fileName))
 	if err != nil {
-		return nil, errwrp.Wrap(err, "error adding file")
+		return nil, fmt.Errorf("error adding file: %w", err)
 	}
 
 	// write the options to the buffer
@@ -150,12 +150,12 @@ func (c *Client) postMultipartFile(endpoint string, fileName string, opts Option
 
 	// copy the file contents into the form
 	if _, err = io.Copy(formWriter, file); err != nil {
-		return nil, errwrp.Wrap(err, "error copying file")
+		return nil, fmt.Errorf("error copying file: %w", err)
 	}
 
 	// close the writer before doing request to get closing line on multipart request
 	if err := writer.Close(); err != nil {
-		return nil, errwrp.Wrap(err, "failed to close writer")
+		return nil, fmt.Errorf("failed to close writer: %w", err)
 	}
 
 	resp, err := c.postMultipart(endpoint, buffer, writer.FormDataContentType())

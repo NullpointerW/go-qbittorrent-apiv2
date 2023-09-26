@@ -1,9 +1,8 @@
 package qbt_apiv2
 
 import (
+	"fmt"
 	"net/url"
-
-	errwrp "github.com/pkg/errors"
 )
 
 // Login
@@ -24,7 +23,7 @@ func (c *Client) Login(username, password string) error {
 	if cookies := resp.Cookies(); len(cookies) > 0 {
 		u, err := url.Parse(c.URL)
 		if err != nil {
-			return errwrp.Wrap(err, "parse url error")
+			return fmt.Errorf("parse url error: %w", err)
 		}
 		u.Path = ""
 		c.httpCli.Jar.SetCookies(u, cookies)
