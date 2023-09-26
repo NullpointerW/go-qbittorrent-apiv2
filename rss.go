@@ -195,7 +195,7 @@ func (c *Client) SetAutoDLRule(ruleName string, ruleDef AutoDLRule) error {
 	return nil
 }
 
-// Rename auto-downloading rule
+// RnAutoDLRule Rename auto-downloading rule
 func (c *Client) RnAutoDLRule(newName, oldName string) error {
 	resp, err := c.postXwwwFormUrlencoded("rss/renameRule", Optional{
 		"ruleName":    oldName,
@@ -209,7 +209,7 @@ func (c *Client) RnAutoDLRule(newName, oldName string) error {
 	return nil
 }
 
-// Remove auto-downloading rule
+// RmAutoDLRule Remove auto-downloading rule
 func (c *Client) RmAutoDLRule(ruleName string) error {
 
 	opt := Optional{
@@ -224,7 +224,7 @@ func (c *Client) RmAutoDLRule(ruleName string) error {
 	return nil
 }
 
-// Get all auto-downloading rules
+// LsAutoDLRule Get all auto-downloading rules
 func (c *Client) LsAutoDLRule() (map[string]AutoDLRule, error) {
 	resp, err := c.postXwwwFormUrlencoded("rss/rules", nil)
 	err = RespOk(resp, err)
@@ -241,7 +241,7 @@ func (c *Client) LsAutoDLRule() (map[string]AutoDLRule, error) {
 	return m, nil
 }
 
-func (c *Client) LsArtMatchRlue(ruleName string) (map[string][]string, error) {
+func (c *Client) LsArtMatchRule(ruleName string) (map[string][]string, error) {
 	resp, err := c.postXwwwFormUrlencoded("rss/matchingArticles", Optional{
 		"ruleName": ruleName,
 	})
