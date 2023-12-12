@@ -78,7 +78,7 @@ func TestGetTorrentProperties(t *testing.T) {
 }
 
 func TestGetMainData(t *testing.T) {
-	cli, err := NewCli("http://localhost:8991")
+	cli, err := NewCli("http://localhost:8080")
 	if err != nil {
 		panic(err)
 	}
@@ -88,8 +88,12 @@ func TestGetMainData(t *testing.T) {
 			panic(err)
 		}
 		fmt.Printf("%+v \n ============================== \n", sync)
-
 	}
+	full, err := cli.GetMainDataFull()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v \n ====================???========== \n", full)
 }
 
 func TestGetTorrnetContent(t *testing.T) {

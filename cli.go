@@ -18,7 +18,8 @@ type Client struct {
 	httpCli *http.Client
 	URL     string
 	// API `sync/maindata`` Parameter `rid`
-	rid int
+	rid      int
+	mainData *MainData
 }
 
 // NewCli v2
