@@ -218,6 +218,18 @@ func TestRenameFile(t *testing.T) {
 	}
 }
 
+func TestSetLocation(t *testing.T) {
+	cli, err := NewCli("http://localhost:8991")
+	if err != nil {
+		panic(err)
+	}
+	err = cli.SetLocation("/upload/anime",
+		"385191f125783e4dc16689f0ed7b5cf00961155d")
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func TestAddCategory(t *testing.T) {
 	cli, err := NewCli("http://localhost:8991")
 	if err != nil {
