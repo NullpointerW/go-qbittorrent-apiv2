@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-// I am sure about proxy_type in API >4.5 is string type...
+// I am sure about proxy_type in API >4.5.5 is string type...
 // doc is outdata for so long,but noone fix it.
 // https://github.com/qbittorrent/qBittorrent/issues/20027#issuecomment-1826858530
 type proxyTyp int
@@ -23,6 +23,18 @@ func (p proxyTyp) String() string {
 		return "None"
 	}
 }
+func GetProxyType(s string) proxyTyp {
+	switch s {
+	case "HTTP":
+		return Http
+	case "SOCKS5":
+		return Socks5
+	case "SOCKS4":
+		return Socks4
+	default:
+		return Nil
+	}
+}
 
 const (
 	Nil     proxyTyp = iota
@@ -33,15 +45,16 @@ const (
 	Socks4           // SOCKS4 proxy without authentication
 )
 
+type ConfigTmp Config
 type Config struct {
 	ConfigWithOutProxyType
 	ProxyType proxyTyp `json:"proxy_type"`
 }
-type ConfigVerUnder461 struct {
-	*Config
+type ConfigVerUnder460 struct {
+	*ConfigTmp
 }
-type ConfigVerUper461 struct {
-	*Config
+type ConfigVerUper455 struct {
+	*ConfigTmp
 	ProxyType string `json:"proxy_type"`
 }
 
@@ -223,7 +236,36 @@ type ConfigWithOutProxyType struct {
 	WebUIUsername                      string         `json:"web_ui_username"`
 }
 
+func (c *Config) UnmarshalJSON(b []byte) error {
+	var cfg *ConfigTmp = (*ConfigTmp)(c)
+	if c.version > 455 {
+		cfgUp461 := ConfigVerUper455{ConfigTmp: cfg}
+		err := json.Unmarshal(b, &cfgUp461)
+		if err != nil {
+			return err
+		}
+		c.ProxyType = GetProxyType(cfgUp461.ProxyType)
+		return nil
+	}
+	cfgUn461 := ConfigVerUnder460{ConfigTmp: cfg}
+	return json.Unmarshal(b, &cfgUn461)
+}
+func (c *Config) MarshalJSON() ([]byte, error) {
+	var cfg *ConfigTmp = (*ConfigTmp)(c)
+	if c.version > 455 {
+		cfgUp461 := ConfigVerUper455{ConfigTmp: cfg, ProxyType: c.ProxyType.String()}
+		return json.Marshal(cfgUp461)
+	}
+	cfgUn461 := ConfigVerUnder460{ConfigTmp: cfg}
+	return json.Marshal(cfgUn461)
+}
+
 func (c *Client) GetPreferences() (cfg Config, err error) {
+	vI, err := c.getVersion()
+	if err != nil {
+		return cfg, err
+	}
+	cfg.version = vI
 	resp, err := c.postXwwwFormUrlencoded("app/preferences", nil)
 	err = RespOk(resp, err)
 	if err != nil {
@@ -238,7 +280,12 @@ func (c *Client) GetPreferences() (cfg Config, err error) {
 	return cfg, err
 }
 func (c *Client) SetPreferences(cfg Config) (err error) {
-	b, err := json.Marshal(cfg)
+	vI, err := c.getVersion()
+	if err != nil {
+		return err
+	}
+	cfg.version = vI
+	b, err := json.Marshal(&cfg)
 	if err != nil {
 		return err
 	}
@@ -252,6 +299,13 @@ func (c *Client) SetPreferences(cfg Config) (err error) {
 	}
 	ignrBody(resp.Body)
 	return nil
+}
+func (c *Client) getVersion() (version int, err error) {
+	v, err := c.GetVersion()
+	if err != nil {
+		return -1, err
+	}
+	return versionInt(v), nil
 }
 
 func (c *Client) GetVersion() (ver string, err error) {
