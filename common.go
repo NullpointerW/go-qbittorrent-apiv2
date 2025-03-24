@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
+	"unicode"
 )
 
 const (
@@ -47,4 +49,25 @@ func RespBodyOk(body io.ReadCloser, bizErr error) error {
 func ignrBody(body io.ReadCloser) error {
 	_, err := io.Copy(io.Discard, body)
 	return err
+}
+
+func versionInt(v string) int {
+	v = strings.ToLower(v)
+	l := strings.LastIndex(v, ".")
+	if l == -1 {
+		return 0
+	}
+	sfx := v[l+1:]
+
+	for i, r := range sfx {
+		if !unicode.IsNumber(r) {
+			sfx = sfx[:i]
+			break
+		}
+	}
+	sfxb, vb := []byte(sfx), []byte(v)
+	vb = append(vb[:l+1], sfxb...)
+	var major, minor, patch int
+	fmt.Sscanf(string(vb), "v%d.%d.%d", &major, &minor, &patch)
+	return major*100 + minor*10 + patch
 }

@@ -2,7 +2,9 @@ package qbt_apiv2
 
 import (
 	"fmt"
+	
 	"testing"
+	
 )
 
 func TestLogin(t *testing.T) {
@@ -278,11 +280,13 @@ func TestPreferences(t *testing.T) {
 }
 
 func TestSetPreferences(t *testing.T) {
-	cli, err := NewCli("http://localhost:10086")
+	fmt.Println("TestSetPreferences")
+	cli, err := NewCli("http://localhost:8991")
 	if err != nil {
 		panic(err)
 	}
 	cfg, err := cli.GetPreferences()
+	fmt.Printf("%+v\n", cfg)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -309,7 +313,7 @@ func TestSetPreferences(t *testing.T) {
 }
 
 func TestGetVersion(t *testing.T) {
-	cli, err := NewCli("http://localhost:10086")
+	cli, err := NewCli("http://localhost:8991")
 	if err != nil {
 		panic(err)
 	}
@@ -356,4 +360,12 @@ func TestRemoveItem(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+}
+func TestVersionInt(t *testing.T) {
+	fmt.Println(versionInt("v4.3.1"))
+	fmt.Println(versionInt("V4.3.1beta"))
+	fmt.Println(versionInt("v4.3.1-beta"))
+	fmt.Println(versionInt("v4.3.1-rc"))
+	fmt.Println(versionInt("v4.3.1-rc0"))
+	fmt.Println(versionInt("v4.3.1rc0"))
 }
